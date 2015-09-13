@@ -4,6 +4,8 @@
 function ListNode(val, next) {
     this.val = val;
     this.next = next || null;
+	// apply other methods:
+	// todo
 }
 ListNode.reverse = function(head) {
 	if(head === null || head.next === null) return head;
@@ -27,4 +29,14 @@ ListNode.median = function(head) {
         q = q.next.next;
     }
 	return p;
+};
+ListNode.compare = function(p, q) {
+	while(p !== null && q !== null) {
+		if(p.val != q.val) {
+			return false;
+		}
+		p = p.next;		
+		q = q.next;	
+	}
+	return (p == null && q == null);
 };
