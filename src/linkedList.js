@@ -32,6 +32,17 @@ function ListNode (val, next) {
     this.reverse = function() {
         return ListNode.reverse(this);
     };
+
+    this.median = function() {
+        return ListNode.median.apply(this);
+    };
+
+    this.compare = function(listNode) {
+        // check arguments:
+        // todo
+
+        return ListNode.compare.apply(this, arguments);
+    };
 }
 
 ListNode.reverse = function (head) {
