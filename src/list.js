@@ -35,6 +35,9 @@ function ListNode (val, next) {
 }
 
 ListNode.reverse = function (head) {
+    // check arguments:
+    // todo
+
     if (head === null || head.next === null) return head;
     var p = head;
     var q = p.next;
@@ -50,6 +53,9 @@ ListNode.reverse = function (head) {
 };
 
 ListNode.median = function (head) {
+    // check arguments:
+    // todo
+
     if (head === null || head.next === null) return head;
     var p = head, q = head.next;
     while (q !== null && q.next !== null) {
@@ -60,6 +66,9 @@ ListNode.median = function (head) {
 };
 
 ListNode.compare = function (p, q) {
+    // check arguments:
+    // todo
+
     while (p !== null && q !== null) {
         if (p.val != q.val) {
             return false;
