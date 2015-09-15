@@ -4,12 +4,15 @@
 
 /**
  * ListNode
+ * @param value
+ * @param next
+ * @constructor
  */
-var ListNode = function (val, next) {
+var ListNode = function (value, next) {
     // check arguments:
     // todo
 
-    this.val = val;
+    this.value = value;
     this.next = next || null;
 
     /**
@@ -31,51 +34,47 @@ var ListNode = function (val, next) {
  * @param listNode
  * @constructor
  */
-var LinkedList = function (listNode) {
+var LinkedList = function (listNode, sizeLimit) {
     // check arguments:
     // todo
 
-    var headNode = listNode;
-    var rearNode = null;
-    var curSize = 0;
+    List.call(this, 0, sizeLimit);
 
-    /**
-     * update the rearNode
-     * @returns {*}
-     */
-    var updateRearNode = function () {
-        if (rearNode === null) {
-            rearNode = headNode;
-            curSize = 1;
+    this._front = listNode;
+
+    this._updateRearNode();
+};
+LinkedList
+    .inherits(List)
+    .method('_getHeadNode', function () {
+        return this._front;
+    })
+    .method('_updateRearNode', function () {
+        if (this._back === null) {
+            this._back = this._front;
+            this._size = 1;
         }
-        if (rearNode === null) {
-            curSize = 0;
+        if (this._back === null) {
+            this._size = 0;
             return null;
         }
-        while (rearNode.next !== null) {
-            rearNode = rearNode.next;
-            curSize++;
+        while (this._back.next !== null) {
+            this._back = this._back.next;
+            this._size++;
         }
-        return rearNode;
-    };
-
-    /**
-     * get the rearNode
-     * @returns {*}
-     */
-    var getRearNode = function () {
-        if (rearNode !== null) return rearNode; // cached
-        return updateRearNode();
-    };
-
-    updateRearNode();
-
-    /**
-     * reverse
-     * @param head
-     * @returns {*}
-     */
-    var reverseList = function (head) {
+        return this._back;
+    })
+    .method('_getRearNode', function () {
+        if (this._back !== null) return this._back; // cached
+        return this._updateRearNode();
+    })
+    .method('front', function () {
+        return this._getHeadNode();
+    })
+    .method('back', function () {
+        return this._getRearNode();
+    })
+    .method('reverseList', function (head) {
         // check arguments:
         // todo
 
@@ -91,20 +90,14 @@ var LinkedList = function (listNode) {
             q = q.next;
         }
         return p;
-    };
-    this.reverse = function () {
-        rearNode = headNode;
-        var head = headNode;
-        headNode = reverseList(head);
+    })
+    .method('reverse', function () {
+        this._back = this._front;
+        var head = this._front;
+        this._front = this.reverseList(head);
         return this;
-    };
-
-    /**
-     * median
-     * @param head
-     * @returns {*}
-     */
-    var medianOfList = function (head) {
+    })
+    .method('medianOfList', function (head) {
         // check arguments:
         // todo
 
@@ -115,118 +108,76 @@ var LinkedList = function (listNode) {
             q = q.next.next;
         }
         return p;
-    };
-    this.median = function () {
-        var head = headNode;
-        return medianOfList(head);
-    };
-
-    /**
-     * compare
-     * @param p
-     * @param q
-     * @returns {boolean}
-     */
-    var compareLists = function (p, q) {
+    })
+    .method('median', function () {
+        var head = this._front;
+        return this.medianOfList(head);
+    })
+    .method('compareLists', function (listArr) {
         // check arguments:
         // todo
 
-        while (p !== null && q !== null) {
-            if (p.val != q.val) {
-                return false;
+        if(listArr.length <= 1) return true;
+        var p, q;
+        for(var i = 1, len = listArr.length; i < len; i++) {
+            p = listArr[0].front();
+            q = listArr[i].front();
+            while (p !== null && q !== null) {
+                if (p.value != q.value) {
+                    return false;
+                }
+                p = p.next;
+                q = q.next;
             }
-            p = p.next;
-            q = q.next;
+            if (!(p == null && q == null)) return false;
         }
-        return (p == null && q == null);
-    };
-    this.compare = function (listNode) {
-        var head = headNode;
-        return compareLists(head, listNode);
-    };
-
-    /**
-     * add
-     * @param listNode
-     * @returns {*}
-     */
-    this.add = function (listNode) {
+        return true;
+    })
+    .method('compare', function (list) {
+        return compareLists([this, list]);
+    })
+    .method('add', function (listNode) {
         // check arguments:
         // todo
 
-        rearNode = getRearNode();
+        this._back = this._getRearNode();
 
-        if (rearNode === null) {
-            headNode = listNode;
-            rearNode = headNode;
+        if (this._back === null) {
+            this._front = listNode;
+            this._back = this._front;
         } else {
-            rearNode.next = listNode;
+            this._back.next = listNode;
         }
 
-        updateRearNode();
+        this._updateRearNode();
         return this;
-    };
-
-    /**
-     * concat
-     * @param listNode
-     * @returns {*}
-     */
-    this.concat = function (linkedList) {
+    })
+    .method('concat', function (list) {
         // check arguments:
         // todo
 
-        rearNode = getRearNode();
+        this._back = this._getRearNode();
 
-        if (rearNode === null) {
-            headNode = linkedList.front();
-            rearNode = headNode;
+        if (this._back === null) {
+            this._front = list.front();
+            this._back = this._front;
         } else {
-            rearNode.next = linkedList.front();
+            this._back.next = list.front();
         }
 
-        updateRearNode();
+        this._updateRearNode();
         return this;
-    };
-
-    /**
-     * the front node
-     * @returns {*}
-     */
-    this.front = function () {
-        return headNode;
-    };
-
-    /**
-     * the back node
-     */
-    this.back = function () {
-        return getRearNode();
-    };
-
-    /**
-     * size
-     * @returns {number}
-     */
-    this.size = function () {
-        return curSize;
-    };
-
-    this.toString = function () {
-        var p = headNode;
-        var str = headNode.val.toString();
+    })
+    .method('toString', function () {
+        var p = this._front;
+        var str = this._front.value.toString();
         while (p.next !== null) {
             p = p.next;
-            str += " -> " + p.val.toString();
+            str += " -> " + p.value.toString();
         }
-        rearNode = p;
+        this._back = p;
         return str;
-    };
-
-    this.print = function () {
-        console.log(this.toString());
-    };
-};
+    });
 
 
 function test() {
@@ -247,27 +198,27 @@ function test() {
     n0.connect(n1).connect(n2).connect(n3).connect(n4).connect(n5);
     m0.connect(m1).connect(m2).connect(m3).connect(m4).connect(m5);
 
-    var list = new LinkedList(n0);
-    list.print();
-    list.reverse()
+    var llist1 = new LinkedList(n0);
+    llist1.print();
+    llist1.reverse()
         .print();
-    list.print();
-    list.reverse();
-    list.print();
-    list.add(new ListNode(6));
-    list.print();
+    llist1.print();
+    llist1.reverse();
+    llist1.print();
+    llist1.add(new ListNode(6));
+    llist1.print();
 
-    var list2 = new LinkedList(m0);
+    var llist2 = new LinkedList(m0);
 
-    list.concat(list2);
-    list.print();
-    list2.print();
-    console.log(list.front().val);
-    console.log(list.back().val);
-    console.log(list2.front().val);
-    console.log(list2.back().val);
-    console.log(list.median().val);
+    llist1.concat(llist2);
+    llist1.print();
+    llist2.print();
+    console.log(llist1.front().value);
+    console.log(llist1.back().value);
+    console.log(llist2.front().value);
+    console.log(llist2.back().value);
+    console.log(llist1.median().value);
 
-    console.log(list.size());
+    console.log(llist1.size());
 }
 test();
