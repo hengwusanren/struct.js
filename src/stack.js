@@ -5,72 +5,100 @@
 /**
  * Stack
  */
-function Stack (arr, size, ifInSpace) {
+var Stack = function (arr, size, ifInSpace) {
     // check arguments:
     // todo
 
-    this.data = ifInSpace ? arr : arr.slice(0);
+    var data = ifInSpace ? arr : arr.slice(0);
     this.capacity = size <= 0 ? -1 : size; // -1 means no capacity limit.
-    var curSize = this.data.length;
-    if(this.capacity > 0) {
+    var curSize = data.length;
+    if (this.capacity > 0) {
         while (curSize > this.capacity) {
-            this.data.pop();
+            data.pop();
             curSize--;
         }
     }
 
-    this.pop = function() {
-        if(curSize > 0) {
-            var top = this.data[this.data.length - 1];
-            Array.prototype.pop.apply(this.data);
+    /**
+     * pop
+     * @returns {*}
+     */
+    this.pop = function () {
+        if (curSize > 0) {
+            var top = data[data.length - 1];
+            Array.prototype.pop.apply(data);
             curSize--;
             return top;
         }
         return null;
     };
 
-    this.push = function(ele) {
+    /**
+     * push
+     * @param ele
+     */
+    this.push = function (ele) {
         // check arguments:
         // todo
 
-        if(this.capacity < 0 || this.capacity > curSize) {
-            Array.prototype.push.apply(this.data, arguments);
+        if (this.capacity < 0 || this.capacity > curSize) {
+            Array.prototype.push.apply(data, arguments);
             curSize++;
         }
     };
 
-    this.size = function() {
+    /**
+     * clear
+     */
+    this.clear = function () {
+        data.length = 0;
+        curSize = 0;
+    };
+
+    /**
+     * isEmpty
+     * @returns {boolean}
+     */
+    this.isEmpty = function () {
+        return curSize == 0;
+    };
+
+    /**
+     * size
+     * @returns {number}
+     */
+    this.size = function () {
         return curSize;
     };
 
-    this.toString = function() {
-        if(curSize == 0) return "";
-        var str = this.data[0].toString();
-        for(var i = 1; i < curSize; i++) {
-            str += " > " + this.data[i].toString();
+    this.toString = function () {
+        if (curSize == 0) return "";
+        var str = data[0].toString();
+        for (var i = 1; i < curSize; i++) {
+            str += " > " + data[i].toString();
         }
         return str;
     };
 
-    this.print = function() {
+    this.print = function () {
         console.log(this.toString());
     };
-}
+};
 
 
 function test() {
     var s = new Stack([1, 2, 3, 4], 8);
     s.print();
-    s.push("sdffw");
+    s.push("test");
     s.print();
     s.pop();
     s.pop();
     s.pop();
-    s.pop();
-    s.pop();
-    s.pop();
-    s.pop();
+    s.push(new Date());
     s.print();
     console.log(s.size());
+    s.clear();
+    console.log(s.isEmpty());
+    s.print();
 }
 test();
