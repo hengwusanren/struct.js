@@ -5,89 +5,51 @@
 /**
  * Stack
  */
-var Stack = function (arr, size, ifInSpace) {
-    // check arguments:
-    // todo
+var Stack = (function (SuperArrayList) {
+    if (!SuperArrayList) return null;
 
-    var data = ifInSpace ? arr : arr.slice(0);
-    this.capacity = size <= 0 ? -1 : size; // -1 means no capacity limit.
-    var curSize = data.length;
-    if (this.capacity > 0) {
-        while (curSize > this.capacity) {
-            data.pop();
-            curSize--;
-        }
-    }
-
-    /**
-     * pop
-     * @returns {*}
-     */
-    this.pop = function () {
-        if (curSize > 0) {
-            var top = data[data.length - 1];
-            Array.prototype.pop.apply(data);
-            curSize--;
-            return top;
-        }
-        return null;
-    };
-
-    /**
-     * push
-     * @param ele
-     */
-    this.push = function (ele) {
+    return function (sizeLimit, arr, ifInSpace) {
         // check arguments:
         // todo
 
-        if (this.capacity < 0 || this.capacity > curSize) {
-            Array.prototype.push.apply(data, arguments);
-            curSize++;
-        }
-    };
+        SuperArrayList.call(this, sizeLimit, arr, ifInSpace);
+    }
+        .inherits(SuperArrayList)
+        .method('push', function (ele) {
+            // check arguments:
+            // todo
 
-    /**
-     * clear
-     */
-    this.clear = function () {
-        data.length = 0;
-        curSize = 0;
-    };
-
-    /**
-     * isEmpty
-     * @returns {boolean}
-     */
-    this.isEmpty = function () {
-        return curSize == 0;
-    };
-
-    /**
-     * size
-     * @returns {number}
-     */
-    this.size = function () {
-        return curSize;
-    };
-
-    this.toString = function () {
-        if (curSize == 0) return "";
-        var str = data[0].toString();
-        for (var i = 1; i < curSize; i++) {
-            str += " > " + data[i].toString();
-        }
-        return str;
-    };
-
-    this.print = function () {
-        console.log(this.toString());
-    };
-};
+            if (this._capacity < 0 || this._capacity > this._size) {
+                Array.prototype.push.apply(this._data, arguments);
+                this._size++;
+            }
+        })
+        .method('pop', function () {
+            if (this._size > 0) {
+                var top = this._data[this._data.length - 1];
+                Array.prototype.pop.apply(this._data);
+                this._size--;
+                return top;
+            }
+            return null;
+        })
+        .method('clear', function () {
+            this._data.length = 0;
+            this._size = 0;
+        })
+        .method('toString', function () {
+            if (this._size == 0) return "";
+            var str = this._data[0].toString();
+            for (var i = 1; i < this._size; i++) {
+                str += " > " + this._data[i].toString();
+            }
+            return str;
+        });
+})(ArrayList);
 
 
 function test() {
-    var s = new Stack([1, 2, 3, 4], 8);
+    var s = new Stack(8, [1, 2, 3, 4]);
     s.print();
     s.push("test");
     s.print();

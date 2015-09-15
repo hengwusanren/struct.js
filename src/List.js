@@ -24,7 +24,7 @@ var List = (function () {
          * @type {number}
          * @private
          */
-        this._capacity = (sizeLimit > 0 ? sizeLimit : 0);
+        this._capacity = (sizeLimit > 0 ? sizeLimit : 0); // 0: no limit
 
         /**
          * size of list
@@ -54,7 +54,7 @@ var List = (function () {
             return this._back;
         })
         .method('capacity', function () {
-            return this._capacity
+            return this._capacity;
         })
         .method('size', function () {
             return this._size;
@@ -66,6 +66,7 @@ var List = (function () {
             return this._size === 0;
         })
         .method('isFull', function () {
+            if(this._capacity == 0) return false;
             if (this._size > this._capacity) {
                 this._size = this._capacity;
             }

@@ -13,9 +13,6 @@ var ListNode = (function () {
         this.value = value;
         this.next = next || null;
     }
-    /**
-     * connect to another node
-     */
         .method('connect', function (listNode) {
             // check arguments:
             // todo
@@ -130,7 +127,7 @@ var LinkedList = (function (SuperList) {
             return true;
         })
         .method('compare', function (list) {
-            return compareLists([this, list]);
+            return this.compareLists([this, list]);
         })
         .method('add', function (listNode) {
             // check arguments:
