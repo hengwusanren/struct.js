@@ -66,14 +66,14 @@ var List = (function () {
             return this._size === 0;
         })
         .method('isFull', function () {
-            if(this._capacity == 0) return false;
+            if(this._capacity <= 0) return false;
             if (this._size > this._capacity) {
                 this._size = this._capacity;
             }
-            return this._size === this._capacity;
+            return this._size == this._capacity;
         })
         .method('toString', function () {
-            return '';
+            return 'tobe overridden';
         })
         .method('print', function () {
             console.log(this.toString());
