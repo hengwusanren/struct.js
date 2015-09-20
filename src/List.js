@@ -10,6 +10,8 @@ var List = (function () {
         // check arguments:
         // todo
 
+        if(sizeLimit == null) sizeLimit = 0;
+
         /**
          * type of list
          * 0: linked allocated

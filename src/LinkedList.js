@@ -28,22 +28,22 @@ var LinkedList = (function (SuperList) {
     /********************************
      * LinkedList
      ********************************/
-    return function (headValue, sizeLimit) {
+    return function (value, sizeLimit) {
         // check arguments:
         // todo
 
         SuperList.call(this, 0, sizeLimit);
 
-        this._front = (headValue === null || arguments.length == 0) ?
-            null : new ListNode(headValue);
+        this._front = (value == null) ?
+            null : new ListNode(value);
 
-        this._updateRearNode();
+        this._updateBackNode();
     }
         .inherits(SuperList)
-        .method('_getHeadNode', function () {
+        .method('_getFrontNode', function () {
             return this._front;
         })
-        .method('_updateRearNode', function () {
+        .method('_updateBackNode', function () {
             if (this._back === null) {
                 this._back = this._front;
                 this._size = 1;
@@ -58,15 +58,15 @@ var LinkedList = (function (SuperList) {
             }
             return this._back;
         })
-        .method('_getRearNode', function () {
+        .method('_getBackNode', function () {
             if (this._back !== null) return this._back; // cached
-            return this._updateRearNode();
+            return this._updateBackNode();
         })
         .method('front', function () {
-            return this._getHeadNode();
+            return this._getFrontNode();
         })
         .method('back', function () {
-            return this._getRearNode();
+            return this._getBackNode();
         })
         .method('reverseList', function (head) {
             // check arguments:
@@ -95,7 +95,7 @@ var LinkedList = (function (SuperList) {
             // check arguments:
             // todo
 
-            if (head === null || head.next === null) return head;
+            if (head == null || head.next == null) return head;
             var p = head, q = head.next;
             while (q !== null && q.next !== null) {
                 p = p.next;
@@ -107,7 +107,7 @@ var LinkedList = (function (SuperList) {
             var head = this._front;
             return this.medianOfList(head);
         })
-        .method('compareLists', function (listArr) {
+        .method('compareLists', function (listArr, comparator) {
             // check arguments:
             // todo
 
@@ -117,7 +117,7 @@ var LinkedList = (function (SuperList) {
                 p = listArr[0].front();
                 q = listArr[i].front();
                 while (p !== null && q !== null) {
-                    if (p.value != q.value) {
+                    if (comparator(p.value, q.value)) {
                         return false;
                     }
                     p = p.next;
@@ -128,7 +128,9 @@ var LinkedList = (function (SuperList) {
             return true;
         })
         .method('compare', function (list) {
-            return this.compareLists([this, list]);
+            return this.compareLists([this, list], function (v1, v2) {
+                return Object.compare(v1, v2);
+            });
         })
         .method('push', function (value) {
             // check arguments:
@@ -137,7 +139,7 @@ var LinkedList = (function (SuperList) {
             if(this.isFull()) return this;
 
             var listNode = new ListNode(Object.clone(value));
-            this._back = this._getRearNode();
+            this._back = this._getBackNode();
 
             if (this._back === null) {
                 this._front = listNode;
@@ -147,7 +149,7 @@ var LinkedList = (function (SuperList) {
             }
             this._back.next = listNode;
 
-            this._updateRearNode();
+            this._updateBackNode();
             return this;
         })
     /**
