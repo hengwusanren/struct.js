@@ -11,7 +11,7 @@ var ListNode = (function () {
         // todo
 
         this.value = value;
-        this.next = next || null;
+        this.next = (next == null ? null : next);
     }
         .method('connect', function (listNode) {
             // check arguments:
@@ -68,11 +68,12 @@ var LinkedList = (function (SuperList) {
         .method('back', function () {
             return this._getBackNode();
         })
-        .method('reverseList', function (head) {
+        .method('reverseList', function (list) {
             // check arguments:
             // todo
 
-            if (head === null || head.next === null) return head;
+            var head = list.front();
+            if (head == null || head.next == null) return null;
             var p = head;
             var q = p.next;
             var t = null;
@@ -88,7 +89,7 @@ var LinkedList = (function (SuperList) {
         .method('reverse', function () {
             this._back = this._front;
             var head = this._front;
-            this._front = this.reverseList(head);
+            this._front = LinkedList.prototype.reverseList(this);
             return this;
         })
         .method('medianOfList', function (head) {
