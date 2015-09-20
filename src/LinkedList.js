@@ -28,13 +28,14 @@ var LinkedList = (function (SuperList) {
     /********************************
      * LinkedList
      ********************************/
-    return function (listNode, sizeLimit) {
+    return function (headValue, sizeLimit) {
         // check arguments:
         // todo
 
         SuperList.call(this, 0, sizeLimit);
 
-        this._front = listNode;
+        this._front = (headValue === null || arguments.length == 0) ?
+            null : new ListNode(headValue);
 
         this._updateRearNode();
     }
@@ -129,37 +130,67 @@ var LinkedList = (function (SuperList) {
         .method('compare', function (list) {
             return this.compareLists([this, list]);
         })
-        .method('add', function (listNode) {
+        .method('push', function (value) {
             // check arguments:
             // todo
 
+            if(this.isFull()) return this;
+
+            var listNode = new ListNode(Object.clone(value));
             this._back = this._getRearNode();
 
             if (this._back === null) {
                 this._front = listNode;
                 this._back = this._front;
-            } else {
-                this._back.next = listNode;
+                this._size = 1;
+                return this;
             }
+            this._back.next = listNode;
 
             this._updateRearNode();
             return this;
         })
-        .method('concat', function (list) {
+    /**
+     * append a list
+     */
+        .method('pushList', function (list) {
             // check arguments:
             // todo
 
-            this._back = this._getRearNode();
+            if(this.isFull() || list.isEmpty()) return this;
 
-            if (this._back === null) {
-                this._front = list.front();
-                this._back = this._front;
-            } else {
-                this._back.next = list.front();
+            var listSize = list.size();
+
+            var count = this._capacity <= 0 ? listSize : (this._capacity - this._size);
+            if(count > listSize) count = listSize;
+
+            var listIterator = list.front();
+
+            while(count > 0 && listIterator !== null) {
+                this.push(listIterator.value);
+                listIterator = listIterator.next;
+                count--;
             }
 
-            this._updateRearNode();
             return this;
+        })
+    /**
+     * prepend a listNode
+     */
+        .method('insert', function (value) {
+            return 'tobe overridden';
+        })
+    /**
+     * prepend an array of listNode
+     */
+        .method('insertArray', function (arr) {
+            return 'tobe overridden';
+        })
+    /**
+     * prepend a list
+     */
+        .method('insertList', function (list) {
+            return 'tobe overridden';
         })
         .method('toString', function () {
             var p = this._front;
@@ -174,44 +205,7 @@ var LinkedList = (function (SuperList) {
 })(List);
 
 
-function test() {
-    var n0 = new ListNode(0);
-    var n1 = new ListNode(1);
-    var n2 = new ListNode(2);
-    var n3 = new ListNode(3);
-    var n4 = new ListNode(4);
-    var n5 = new ListNode(5);
-
-    var m0 = new ListNode('a');
-    var m1 = new ListNode('b');
-    var m2 = new ListNode('c');
-    var m3 = new ListNode('d');
-    var m4 = new ListNode('e');
-    var m5 = new ListNode('f');
-
-    n0.connect(n1).connect(n2).connect(n3).connect(n4).connect(n5);
-    m0.connect(m1).connect(m2).connect(m3).connect(m4).connect(m5);
-
-    var llist1 = new LinkedList(n0);
-    llist1.print();
-    llist1.reverse().print();
-    llist1.print();
-    llist1.reverse();
-    llist1.print();
-    llist1.add(new ListNode(6));
-    llist1.print();
-
-    var llist2 = new LinkedList(m0);
-
-    llist1.concat(llist2);
-    llist1.print();
-    llist2.print();
-    console.log(llist1.front().value);
-    console.log(llist1.back().value);
-    console.log(llist2.front().value);
-    console.log(llist2.back().value);
-    console.log(llist1.median().value);
-
-    console.log(llist1.size());
-}
-//test();
+(function () {
+    //
+})
+();

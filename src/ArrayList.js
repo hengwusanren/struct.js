@@ -12,7 +12,7 @@ var ArrayList = (function (SuperList) {
         SuperList.call(this, 1, sizeLimit);
 
         if(!arr) arr = [];
-        this._data = (!ifInSpace) ? arr : arr.clone();
+        this._data = (!ifInSpace) ? arr : Object.clone(arr);
 
         this._size = this._data.length;
         if(this._capacity > 0) {
@@ -22,6 +22,8 @@ var ArrayList = (function (SuperList) {
                 this._size--;
             }
         }
+
+        // notice: _front and _back are useless to ArrayList
     }
         .inherits(SuperList)
         .method('resizeTo', function (sizeLimit) {
@@ -41,6 +43,34 @@ var ArrayList = (function (SuperList) {
             }
             return this;
         })
+        .method('front', function () {
+            return this._size > 0 ? this._data[0] : null;
+        })
+        .method('back', function () {
+            return this._size > 0 ? this._data[this._data.length - 1] : null;
+        })
+        .method('push', function (value) {
+            // check arguments:
+            // todo
+
+            if(this.isFull()) return this;
+
+            this._data.push(Object.clone(value));
+            this._size++;
+
+            return this;
+        })
+        .method('pop', function () {
+            if (!this.isEmpty()) {
+                this._data.pop();
+                this._size--;
+            }
+            return this;
+        })
+        .method('clear', function () {
+            this._data.length = 0;
+            this._size = 0;
+        })
         .method('toString', function () {
             if(this._size == 0) return "";
             var str = this._data[0].toString();
@@ -52,7 +82,7 @@ var ArrayList = (function (SuperList) {
 })(List);
 
 
-function test() {
+(function () {
     var n = 5;
 
     var alist1 = new ArrayList(n);
@@ -60,5 +90,5 @@ function test() {
 
     alist1.print();
     alist2.print();
-}
-//test();
+})
+();

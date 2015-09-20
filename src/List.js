@@ -72,6 +72,23 @@ var List = (function () {
             }
             return this._size == this._capacity;
         })
+        .method('push', function (value) {
+            return 'tobe overridden';
+        })
+        .method('pushArray', function (arr) {
+            // check arguments:
+            // todo
+
+            if(this.isFull()) return this;
+
+            var count = this._capacity <= 0 ? arr.length : (this._capacity - this._size);
+            if(count > arr.length) count = arr.length;
+
+            for(var i = 0; i < count; i++) {
+                this.push(arr[i]);
+            }
+            return this;
+        })
         .method('toString', function () {
             return 'tobe overridden';
         })

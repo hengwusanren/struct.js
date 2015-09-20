@@ -206,4 +206,7 @@ if (!Object.compare) {
 
         return true;
     };
+    Object.prototype.deepCompare = function (obj) {
+        return Object.compare(this, obj);
+    };
 }
