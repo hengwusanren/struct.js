@@ -22,7 +22,7 @@ var DListNode = (function () {
             // todo
 
             this.next = dListNode;
-            dListNode.prev = this;
+            if(dListNode != null) dListNode.prev = this;
             return this.next;
         });
 })();
@@ -30,7 +30,7 @@ var DListNode = (function () {
 /********************************
  * DLinkedList
  ********************************/
-var DLinkedList = (function (SuperList, SuperLinkedList) {
+var DLinkedList = (function (SuperList, SuperLinkedList, Node) {
     if (!SuperList || !SuperLinkedList) return null;
 
     return function (value, sizeLimit) {
@@ -39,20 +39,19 @@ var DLinkedList = (function (SuperList, SuperLinkedList) {
 
         SuperList.call(this, 0, sizeLimit);
 
+        this._nodeType = Node;
+
         this._front = (value == null) ?
-            null : new DListNode(value);
+            null : this.newNode(value);
 
-        this._head = {
-            next: this._front
-        };
+        this._head = {};
+        this._rear = {};
 
-        this._updateRearNode();
+        this._updateBackNode();
 
-        this._rear = {
-            prev: this._back
-        };
+        this._updateHeadRear();
 
-        this._reversed = false;
+        //this._reversed = false;
     }
         .inherits(SuperLinkedList)
         .method('_getFrontNode', function () {
@@ -100,12 +99,27 @@ var DLinkedList = (function (SuperList, SuperLinkedList) {
             return this._rear;
         })
         .method('_updateHead', function () {
-            this._head.next = this.front();
+            this._head = {
+                next: this._front
+            };
             return this._head;
         })
         .method('_updateRear', function () {
-            this._rear.next = this.back();
+            this._rear = {
+                prev: this._back
+            };
             return this._rear;
+        })
+        .method('_updateHeadRear', function () {
+            this._head = {
+                next: this._front
+            };
+            this._rear = {
+                prev: this._back
+            };
+            if(this._front) this._front.prev = null;
+            if(this._back) this._back.next = null;
+            return this;
         })
         .method('reverseList', function (list) {
             // check arguments:
@@ -114,12 +128,12 @@ var DLinkedList = (function (SuperList, SuperLinkedList) {
             DLinkedList.prototype.reverse.call(list);
         })
         .method('reverse', function () {
-            // todo
+            return LinkedList.prototype.reverse.call(this)._updateHeadRear();
         })
-        .method('push', function () {
-            // todo
+        .method('push', function (value, clone) {
+            return LinkedList.prototype.push.call(this, value, clone)._updateHeadRear();
         })
-        .method('pushList', function () {
-            // todo
+        .method('pushList', function (list, clone) {
+            return LinkedList.prototype.pushList.call(this, list, clone)._updateHeadRear();
         });
-})(List, LinkedList);
+})(List, LinkedList, DListNode);

@@ -74,10 +74,10 @@ var List = (function () {
             }
             return this._size == this._capacity;
         })
-        .method('push', function (value) {
+        .method('push', function (value, clone) {
             return 'tobe overridden';
         })
-        .method('pushArray', function (arr) {
+        .method('pushArray', function (arr, clone) {
             // check arguments:
             // todo
 
@@ -87,7 +87,24 @@ var List = (function () {
             if(count > arr.length) count = arr.length;
 
             for(var i = 0; i < count; i++) {
-                this.push(arr[i]);
+                this.push(arr[i], clone);
+            }
+            return this;
+        })
+        .method('insert', function (value, clone) {
+            return 'tobe overridden';
+        })
+        .method('insertArray', function (arr, clone) {
+            // check arguments:
+            // todo
+
+            if(this.isFull()) return this;
+
+            var count = this._capacity <= 0 ? arr.length : (this._capacity - this._size);
+            if(count > arr.length) count = arr.length;
+
+            for(var i = 0; i < count; i++) {
+                this.insert(arr[i], clone);
             }
             return this;
         })

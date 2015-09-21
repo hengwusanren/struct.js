@@ -21,6 +21,33 @@ function InheritPrototype(subType, superType) {
 }
 
 /**
+ * Copied from http://stackoverflow.com/questions/3362471/how-can-i-call-a-javascript-constructor-using-call-or-apply
+ */
+function Construct(Constructor, ifArguments, args) {
+    if(!ifArguments) var args = Array.prototype.slice.call(arguments, 2);
+    return function() {
+
+        var Temp = function(){}, // temporary constructor
+            inst, ret; // other vars
+
+        // Give the Temp constructor the Constructor's prototype
+        Temp.prototype = Constructor.prototype;
+
+        // Create a new instance
+        inst = new Temp;
+
+        // Call the original Constructor with the temp
+        // instance as its context (i.e. its 'this' value)
+        ret = Constructor.apply(inst, args);
+
+        // If an object has been returned then return it otherwise
+        // return the original instance.
+        // (consistent with behaviour of the new operator)
+        return Object(ret) === ret ? ret : inst;
+    }();
+}
+
+/**
  * add a "public method" to prototype
  */
 Function.prototype.method = function(name, func) {

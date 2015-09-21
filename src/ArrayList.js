@@ -5,14 +5,14 @@
 var ArrayList = (function (SuperList) {
     if(!SuperList) return null;
 
-    return function (sizeLimit, arr, ifInSpace) {
+    return function (sizeLimit, arr, clone) {
         // check arguments:
         // todo
 
         SuperList.call(this, 1, sizeLimit);
 
         if(!arr) arr = [];
-        this._data = (!ifInSpace) ? arr : Object.clone(arr);
+        this._data = clone ? Object.clone(arr) : arr;
 
         this._size = this._data.length;
         if(this._capacity > 0) {
@@ -49,13 +49,13 @@ var ArrayList = (function (SuperList) {
         .method('back', function () {
             return this._size > 0 ? this._data[this._data.length - 1] : null;
         })
-        .method('push', function (value) {
+        .method('push', function (value, clone) {
             // check arguments:
             // todo
 
             if(this.isFull()) return this;
 
-            this._data.push(Object.clone(value));
+            this._data.push(clone ? Object.clone(value) : value);
             this._size++;
 
             return this;

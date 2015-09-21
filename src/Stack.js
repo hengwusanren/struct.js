@@ -8,11 +8,11 @@
 var Stack = (function (SuperArrayList) {
     if (!SuperArrayList) return null;
 
-    return function (sizeLimit, arr, ifInSpace) {
+    return function (sizeLimit, arr, clone) {
         // check arguments:
         // todo
 
-        SuperArrayList.call(this, sizeLimit, arr, ifInSpace);
+        SuperArrayList.call(this, sizeLimit, arr, clone);
     }
         .inherits(SuperArrayList)
         .method('top', function () {

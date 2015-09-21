@@ -22,7 +22,7 @@ var ListNode = (function () {
         });
 })();
 
-var LinkedList = (function (SuperList) {
+var LinkedList = (function (SuperList, Node) {
     if(!SuperList) return null;
 
     /********************************
@@ -34,8 +34,10 @@ var LinkedList = (function (SuperList) {
 
         SuperList.call(this, 0, sizeLimit);
 
+        this._nodeType = Node;
+
         this._front = (value == null) ?
-            null : new ListNode(value);
+            null : this.newNode(value);
 
         this._updateBackNode();
     }
@@ -72,24 +74,24 @@ var LinkedList = (function (SuperList) {
             // check arguments:
             // todo
 
-            var head = list.front();
-            if (head == null || head.next == null) return null;
-            var p = head;
-            var q = p.next;
-            var t = null;
-            while (true) {
-                p.next = t;
-                if (q === null) break;
-                t = p;
-                p = q;
-                q = q.next;
-            }
-            return p;
+            LinkedList.prototype.reverse.call(list);
         })
         .method('reverse', function () {
             this._back = this._front;
             var head = this._front;
-            this._front = LinkedList.prototype.reverseList(this);
+            if (!(head == null || head.next == null)) {
+                var p = head;
+                var q = p.next;
+                var t = null;
+                while (true) {
+                    p.connect(t);//p.next = t;
+                    if (q === null) break;
+                    t = p;
+                    p = q;
+                    q = q.next;
+                }
+                this._front = p;
+            }
             return this;
         })
         .method('medianOfList', function (head) {
@@ -128,18 +130,24 @@ var LinkedList = (function (SuperList) {
             }
             return true;
         })
-        .method('compare', function (list) {
-            return this.compareLists([this, list], function (v1, v2) {
-                return Object.compare(v1, v2);
-            });
+        .method('compare', function (list, comparator) {
+            // check arguments:
+            // todo
+
+            if(!comparator) {
+                comparator = function (v1, v2) {
+                    return v1 == v2;
+                };
+            }
+            return this.compareLists([this, list], comparator);
         })
-        .method('push', function (value) {
+        .method('push', function (value, clone) {
             // check arguments:
             // todo
 
             if(this.isFull()) return this;
 
-            var listNode = new ListNode(Object.clone(value));
+            var listNode = this.newNode(clone ? Object.clone(value) : value);
             this._back = this._getBackNode();
 
             if (this._back === null) {
@@ -148,7 +156,7 @@ var LinkedList = (function (SuperList) {
                 this._size = 1;
                 return this;
             }
-            this._back.next = listNode;
+            this._back.connect(listNode);//this._back.next = listNode;
 
             this._updateBackNode();
             return this;
@@ -156,7 +164,7 @@ var LinkedList = (function (SuperList) {
     /**
      * append a list
      */
-        .method('pushList', function (list) {
+        .method('pushList', function (list, clone) {
             // check arguments:
             // todo
 
@@ -164,36 +172,96 @@ var LinkedList = (function (SuperList) {
 
             var listSize = list.size();
 
-            var count = this._capacity <= 0 ? listSize : (this._capacity - this._size);
-            if(count > listSize) count = listSize;
+            // cannot push the list for no space:
+            if(this._capacity > 0 && this._capacity < (this._size + listSize)) return this;
 
             var listIterator = list.front();
 
-            while(count > 0 && listIterator !== null) {
-                this.push(listIterator.value);
-                listIterator = listIterator.next;
-                count--;
+            if(!clone) {
+                if(this._back == null) {
+                    this._front = listIterator;
+                } else {
+                    this._back.connect(listIterator);//this._back.next = listIterator;
+                }
+                this._back = list.back();
+                this._size += listSize;
+            } else {
+                var count = this._capacity <= 0 ? listSize : (this._capacity - this._size);
+                if (count > listSize) count = listSize;
+
+                while (count > 0 && listIterator !== null) {
+                    this.push(listIterator.value, true);
+                    listIterator = listIterator.next;
+                    count--;
+                }
             }
 
             return this;
         })
+        .method('newNode', function () {
+            return Construct(this._nodeType, true, arguments);
+        })
     /**
      * prepend a listNode
      */
-        .method('insert', function (value) {
-            return 'tobe overridden';
-        })
-    /**
-     * prepend an array of listNode
-     */
-        .method('insertArray', function (arr) {
-            return 'tobe overridden';
+        .method('insert', function (value, clone) {
+            // check arguments:
+            // todo
+
+            if(this.isFull()) return this;
+
+            var listNode = this.newNode(clone ? Object.clone(value) : value);
+            this._front = this._getFrontNode();
+
+            if (this._front === null) {
+                this._size = 0;
+                this._front = listNode;
+                this._back = this._front;
+            } else {
+                listNode.connect(this._front);//listNode.next = this._front;
+                this._front = listNode;
+            }
+            this._size++;
+            return this;
         })
     /**
      * prepend a list
      */
-        .method('insertList', function (list) {
-            return 'tobe overridden';
+        .method('insertList', function (list, clone) {
+            // check arguments:
+            // todo
+
+            if(this.isFull() || list.isEmpty()) return this;
+
+            var listSize = list.size();
+
+            // cannot insert the list for no space:
+            if(this._capacity > 0 && this._capacity < (this._size + listSize)) return this;
+
+            var listIterator = list.back();
+
+            if(!clone) {
+                if(this._front == null) {
+                    this._back = listIterator;
+                } else {
+                    listIterator.connect(this._front);//listIterator.next = this._front;
+                }
+                this._front = list.front();
+                this._size += listSize;
+            } else {
+                list.reverse();
+                var count = this._capacity <= 0 ? listSize : (this._capacity - this._size);
+                if (count > listSize) count = listSize;
+
+                while (count > 0 && listIterator !== null) {
+                    this.insert(listIterator.value, true);
+                    listIterator = listIterator.next;
+                    count--;
+                }
+                list.reverse();
+            }
+
+            return this;
         })
         .method('toString', function () {
             var p = this._front;
@@ -205,7 +273,7 @@ var LinkedList = (function (SuperList) {
             this._back = p;
             return str;
         });
-})(List);
+})(List, ListNode);
 
 
 (function () {
