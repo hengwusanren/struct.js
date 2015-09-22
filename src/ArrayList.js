@@ -2,8 +2,14 @@
  * Created by v-kshe on 9/15/2015.
  */
 
+/********************************
+ * ArrayList
+ ********************************/
 var ArrayList = (function (SuperList) {
-    if(!SuperList) return null;
+
+    "use strict";
+
+    if (!SuperList) return null;
 
     return function (sizeLimit, arr, clone) {
         // check arguments:
@@ -11,11 +17,11 @@ var ArrayList = (function (SuperList) {
 
         SuperList.call(this, 1, sizeLimit);
 
-        if(!arr) arr = [];
+        if (!arr) arr = [];
         this._data = clone ? Object.clone(arr) : arr;
 
         this._size = this._data.length;
-        if(this._capacity > 0) {
+        if (this._capacity > 0) {
             // shrink:
             while (this._size > this._capacity) {
                 this._data.pop();
@@ -30,8 +36,8 @@ var ArrayList = (function (SuperList) {
             // check arguments:
             // todo
 
-            if(sizeLimit < 1 || this._capacity == sizeLimit) return this;
-            if(this._capacity < sizeLimit) {
+            if (sizeLimit < 1 || this._capacity == sizeLimit) return this;
+            if (this._capacity < sizeLimit) {
                 this._capacity = sizeLimit;
                 return this;
             }
@@ -53,7 +59,7 @@ var ArrayList = (function (SuperList) {
             // check arguments:
             // todo
 
-            if(this.isFull()) return this;
+            if (this.isFull()) return this;
 
             this._data.push(clone ? Object.clone(value) : value);
             this._size++;
@@ -72,7 +78,7 @@ var ArrayList = (function (SuperList) {
             this._size = 0;
         })
         .method('toString', function () {
-            if(this._size == 0) return "";
+            if (this._size == 0) return "";
             var str = this._data[0].toString();
             for (var i = 1; i < this._size; i++) {
                 str += ", " + this._data[i].toString();
@@ -82,11 +88,14 @@ var ArrayList = (function (SuperList) {
 })(List);
 
 
-(function () {
+(function () { // test
+
+    return; // not execute tests
+
     var n = 5;
 
     var alist1 = new ArrayList(n);
-    var alist2 = new ArrayList(n, [0,1,2]);
+    var alist2 = new ArrayList(n, [0, 1, 2]);
 
     alist1.print();
     alist2.print();

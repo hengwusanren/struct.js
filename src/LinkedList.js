@@ -2,13 +2,18 @@
  * Created by hengwu on 2015/9/14.
  */
 
+/********************************
+ * ListNode
+ ********************************/
 var ListNode = (function () {
-    /********************************
-     * ListNode
-     ********************************/
+
+    "use strict";
+
     return function (value, next) {
         // check arguments:
         // todo
+
+        if (arguments.length == 0) throw new Error('Constructor requires value.');
 
         this.value = value;
         this.next = (next == null ? null : next);
@@ -22,12 +27,15 @@ var ListNode = (function () {
         });
 })();
 
+/********************************
+ * LinkedList
+ ********************************/
 var LinkedList = (function (SuperList, Node) {
-    if(!SuperList) return null;
 
-    /********************************
-     * LinkedList
-     ********************************/
+    "use strict";
+
+    if (!SuperList) return null;
+
     return function (value, sizeLimit) {
         // check arguments:
         // todo
@@ -134,7 +142,7 @@ var LinkedList = (function (SuperList, Node) {
             // check arguments:
             // todo
 
-            if(!comparator) {
+            if (!comparator) {
                 comparator = function (v1, v2) {
                     return v1 == v2;
                 };
@@ -145,7 +153,7 @@ var LinkedList = (function (SuperList, Node) {
             // check arguments:
             // todo
 
-            if(this.isFull()) return this;
+            if (this.isFull()) return this;
 
             var listNode = this.newNode(clone ? Object.clone(value) : value);
             this._back = this._getBackNode();
@@ -168,17 +176,17 @@ var LinkedList = (function (SuperList, Node) {
             // check arguments:
             // todo
 
-            if(this.isFull() || list.isEmpty()) return this;
+            if (this.isFull() || list.isEmpty()) return this;
 
             var listSize = list.size();
 
             // cannot push the list for no space:
-            if(this._capacity > 0 && this._capacity < (this._size + listSize)) return this;
+            if (this._capacity > 0 && this._capacity < (this._size + listSize)) return this;
 
             var listIterator = list.front();
 
-            if(!clone) {
-                if(this._back == null) {
+            if (!clone) {
+                if (this._back == null) {
                     this._front = listIterator;
                 } else {
                     this._back.connect(listIterator);//this._back.next = listIterator;
@@ -208,7 +216,7 @@ var LinkedList = (function (SuperList, Node) {
             // check arguments:
             // todo
 
-            if(this.isFull()) return this;
+            if (this.isFull()) return this;
 
             var listNode = this.newNode(clone ? Object.clone(value) : value);
             this._front = this._getFrontNode();
@@ -231,17 +239,17 @@ var LinkedList = (function (SuperList, Node) {
             // check arguments:
             // todo
 
-            if(this.isFull() || list.isEmpty()) return this;
+            if (this.isFull() || list.isEmpty()) return this;
 
             var listSize = list.size();
 
             // cannot insert the list for no space:
-            if(this._capacity > 0 && this._capacity < (this._size + listSize)) return this;
+            if (this._capacity > 0 && this._capacity < (this._size + listSize)) return this;
 
             var listIterator = list.back();
 
-            if(!clone) {
-                if(this._front == null) {
+            if (!clone) {
+                if (this._front == null) {
                     this._back = listIterator;
                 } else {
                     listIterator.connect(this._front);//listIterator.next = this._front;
@@ -276,7 +284,8 @@ var LinkedList = (function (SuperList, Node) {
 })(List, ListNode);
 
 
-(function () {
-    //
+(function () { // test
+
+    return; // not execute tests
 })
 ();

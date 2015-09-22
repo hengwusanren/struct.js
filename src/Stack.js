@@ -6,6 +6,9 @@
  * Stack
  ********************************/
 var Stack = (function (SuperArrayList) {
+
+    "use strict";
+
     if (!SuperArrayList) return null;
 
     return function (sizeLimit, arr, clone) {
@@ -21,7 +24,10 @@ var Stack = (function (SuperArrayList) {
 })(ArrayList);
 
 
-(function () {
+(function () { // test
+
+    return; // not execute tests
+
     var s = new Stack(8, [1, 2, 3, 4]);
     s.print();
     s.push("test");

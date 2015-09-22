@@ -2,15 +2,18 @@
  * Created by v-kshe on 9/15/2015.
  */
 
+/********************************
+ * List
+ ********************************/
 var List = (function () {
-    /********************************
-     * List
-     ********************************/
+
+    "use strict";
+
     return function (type, sizeLimit) {
         // check arguments:
         // todo
 
-        if(sizeLimit == null) sizeLimit = 0;
+        if (sizeLimit == null) sizeLimit = 0;
 
         /**
          * type of list
@@ -19,7 +22,11 @@ var List = (function () {
          * @type {number}
          * @private
          */
-        this._type = (type === 0 ? 0 : 1);
+            //this._type = (type === 0 ? 0 : 1);
+        Object.defineProperty(this, "_type", {
+            value: (type === 0 ? 0 : 1),
+            writable: false
+        });
 
         /**
          * capacity of list
@@ -68,7 +75,7 @@ var List = (function () {
             return this._size === 0;
         })
         .method('isFull', function () {
-            if(this._capacity <= 0) return false;
+            if (this._capacity <= 0) return false;
             if (this._size > this._capacity) {
                 this._size = this._capacity;
             }
@@ -81,12 +88,12 @@ var List = (function () {
             // check arguments:
             // todo
 
-            if(this.isFull()) return this;
+            if (this.isFull()) return this;
 
             var count = this._capacity <= 0 ? arr.length : (this._capacity - this._size);
-            if(count > arr.length) count = arr.length;
+            if (count > arr.length) count = arr.length;
 
-            for(var i = 0; i < count; i++) {
+            for (var i = 0; i < count; i++) {
                 this.push(arr[i], clone);
             }
             return this;
@@ -98,12 +105,12 @@ var List = (function () {
             // check arguments:
             // todo
 
-            if(this.isFull()) return this;
+            if (this.isFull()) return this;
 
             var count = this._capacity <= 0 ? arr.length : (this._capacity - this._size);
-            if(count > arr.length) count = arr.length;
+            if (count > arr.length) count = arr.length;
 
-            for(var i = 0; i < count; i++) {
+            for (var i = 0; i < count; i++) {
                 this.insert(arr[i], clone);
             }
             return this;

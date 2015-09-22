@@ -4,6 +4,7 @@
 
 /**
  * create a new object
+ * e.g: var newObject = Object.create(oldObject);
  */
 if (!Object.create) {
     Object.create = function(oldObject) {
@@ -12,8 +13,10 @@ if (!Object.create) {
         return new F();
     }
 }
-//var newObject = Object.create(oldObject);
 
+/**
+ * let subType inherit superType
+ */
 function InheritPrototype(subType, superType) {
     var prototype = Object.create(superType.prototype);
     prototype.constructor = subType;
@@ -21,7 +24,8 @@ function InheritPrototype(subType, superType) {
 }
 
 /**
- * Copied from http://stackoverflow.com/questions/3362471/how-can-i-call-a-javascript-constructor-using-call-or-apply
+ * construct an object with a constructor and arguments
+ * Copied from http://stackoverflow.com/a/3362623.
  */
 function Construct(Constructor, ifArguments, args) {
     if(!ifArguments) var args = Array.prototype.slice.call(arguments, 2);
@@ -49,6 +53,7 @@ function Construct(Constructor, ifArguments, args) {
 
 /**
  * add a "public method" to prototype
+ * Refer to http://www.crockford.com/javascript/inheritance.html.
  */
 Function.prototype.method = function(name, func) {
     //if (!this.prototype[name]) {
@@ -70,8 +75,7 @@ Function.method('inherits', function(F) {
 
 /**
  * return a deep clone of an obj
- * @param obj
- * @returns {*}
+ * Refer to http://stackoverflow.com/a/728694.
  */
 if (!Object.clone && !Object.prototype.clone) {
     Object.clone = function (obj) {
@@ -114,9 +118,7 @@ if (!Object.clone && !Object.prototype.clone) {
 
 /**
  * deeply-compare objects
- * copied from http://stackoverflow.com/a/1144249.
- * @para {array}
- * @returns {boolean}
+ * Refer to http://stackoverflow.com/a/1144249.
  */
 if (!Object.compare) {
     Object.compare = function () {

@@ -2,17 +2,22 @@
  * Created by hengwu on 2015/9/14.
  */
 
+/********************************
+ * DListNode
+ ********************************/
 var DListNode = (function () {
-    /********************************
-     * DListNode
-     ********************************/
+
+    "use strict";
+
     return function (value, next, single) {
         // check arguments:
         // todo
 
+        if (arguments.length == 0) throw new Error('Constructor requires value.');
+
         this.value = value;
         this.next = (next == null ? null : next);
-        if(next != null) {
+        if (next != null) {
             next.prev = single ? null : this;
         }
         this.prev = null;
@@ -21,8 +26,12 @@ var DListNode = (function () {
             // check arguments:
             // todo
 
+            if (this.next) {
+                this.next.prev = null;
+            }
+
             this.next = dListNode;
-            if(dListNode != null) dListNode.prev = this;
+            if (dListNode) dListNode.prev = this;
             return this.next;
         });
 })();
@@ -31,6 +40,9 @@ var DListNode = (function () {
  * DLinkedList
  ********************************/
 var DLinkedList = (function (SuperList, SuperLinkedList, Node) {
+
+    "use strict";
+
     if (!SuperList || !SuperLinkedList) return null;
 
     return function (value, sizeLimit) {
@@ -117,8 +129,8 @@ var DLinkedList = (function (SuperList, SuperLinkedList, Node) {
             this._rear = {
                 prev: this._back
             };
-            if(this._front) this._front.prev = null;
-            if(this._back) this._back.next = null;
+            if (this._front) this._front.prev = null;
+            if (this._back) this._back.next = null;
             return this;
         })
         .method('reverseList', function (list) {
@@ -137,3 +149,10 @@ var DLinkedList = (function (SuperList, SuperLinkedList, Node) {
             return LinkedList.prototype.pushList.call(this, list, clone)._updateHeadRear();
         });
 })(List, LinkedList, DListNode);
+
+
+(function () { // test
+
+    return; // not execute tests
+})
+();
