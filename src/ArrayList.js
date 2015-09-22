@@ -76,6 +76,7 @@ var ArrayList = (function (SuperList) {
         .method('clear', function () {
             this._data.length = 0;
             this._size = 0;
+            return this;
         })
         .method('toString', function () {
             if (this._size == 0) return "";
@@ -84,6 +85,16 @@ var ArrayList = (function (SuperList) {
                 str += ", " + this._data[i].toString();
             }
             return str;
+        })
+        .method('sort', function (comparator) {
+            // check arguments:
+            // todo
+
+            if(!comparator) {
+                var comparator = function (v1, v2) { return v1 - v2 };
+            }
+            this._data.sort(comparator);
+            return this;
         });
 })(List);
 

@@ -123,6 +123,9 @@ var LinkedList = (function (SuperList, Node) {
             // check arguments:
             // todo
 
+            if (!comparator) {
+                comparator = function (v1, v2) { return v1 == v2; };
+            }
             if (listArr.length <= 1) return true;
             var p, q;
             for (var i = 1, len = listArr.length; i < len; i++) {
@@ -143,11 +146,6 @@ var LinkedList = (function (SuperList, Node) {
             // check arguments:
             // todo
 
-            if (!comparator) {
-                comparator = function (v1, v2) {
-                    return v1 == v2;
-                };
-            }
             return this.compareLists([this, list], comparator);
         })
         .method('push', function (value, clone) {
