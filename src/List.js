@@ -22,7 +22,6 @@ var List = (function () {
          * @type {number}
          * @private
          */
-            //this._type = (type === 0 ? 0 : 1);
         Object.defineProperty(this, "_type", {
             value: (type === 0 ? 0 : 1),
             writable: false

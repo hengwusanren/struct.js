@@ -3,36 +3,101 @@
  */
 
 /********************************
- * Graph
+ * GraphNode
  ********************************/
-var Graph = (function () {
+var GraphNode = (function (Map) {
 
     "use strict";
 
-    return function (size, loadFactor) {
+    if(!Map) return null;
+
+    return function (value, id) {
         // check arguments:
         // todo
 
-        this._table = new Object();
-        this._size = 0;
-    }
-        .method('has', function (key) {
-            // check arguments:
-            // todo
+        if (arguments.length == 0) throw new Error('Constructor requires value.');
 
-            return key in this._table;
-        })
-        .method('get', function (key) {
-            // check arguments:
-            // todo
+        /**
+         * value of this node
+         */
+        this.value = value;
 
-            return this.has(key) ? entry[key] : null;
-        })
-        .method('put', function (key, value) {
-            // check arguments:
-            // todo
-
-            if(!this.has(key)) this._size++;
-            this._table[key] = value;
+        /**
+         * guid of this node
+         */
+        var tmp_id = this.guid();
+        if(arguments.length > 1 && !isNaN(parseInt(id))) {
+            tmp_id = parseInt(id);
+        }
+        Object.defineProperty(this, "_id", {
+            value: tmp_id,
+            writable: false
         });
-})();
+
+        /**
+         * edges that start from this node
+         * key is a node's guid, value is the value of this edge, e.g. weight.
+         * @type {HashTable}
+         */
+        this.edges = new Map();
+    }
+        .method('guid', function () {
+            return Guid();
+        })
+        .method('id', function () {
+            return this._id;
+        })
+        .method('connect', function (graphNode, edgeValue) {
+            // check arguments:
+            // todo
+
+            this.edges.put(graphNode.id(), edgeValue);
+            return this;
+        })
+        .method('disconnect', function (graphNode) {
+            // check arguments:
+            // todo
+
+            this.edges.remove(graphNode.id());
+            return this;
+        });
+})(HashTable);
+
+/********************************
+ * Graph
+ ********************************/
+var Graph = (function (Node, Map) {
+
+    "use strict";
+
+    if(!Node || !Map) return null;
+
+    return function () {
+        // check arguments:
+        // todo
+
+        this._nodeType = Node;
+
+        this._nodes = new Map();
+    }
+        .method('size', function () {
+            return this._nodes.size();
+        })
+        .method('newNode', function () {
+            return Construct(this._nodeType, true, arguments);
+        })
+        .method('node', function (id) {
+            // check arguments:
+            // todo
+
+            return this._nodes.get(id);
+        })
+        .method('add', function (value, id) {
+            // check arguments:
+            // todo
+
+            if(arguments.length < 2) var id = this.size() + 1;
+            this._nodes.put(id, this.newNode(value, id));
+            return this;
+        });
+})(GraphNode, HashTable);

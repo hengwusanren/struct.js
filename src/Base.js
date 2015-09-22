@@ -52,6 +52,22 @@ function Construct(Constructor, ifArguments, args) {
 }
 
 /**
+ * generate a guid
+ * Copied from http://stackoverflow.com/a/105074.
+ * @return {string}
+ */
+function Guid() {
+    function s4() {
+        return Math.floor((1 + Math.random()) * 0x10000)
+            .toString(16)
+            .substring(1);
+    }
+
+    return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+        s4() + '-' + s4() + s4() + s4();
+}
+
+/**
  * add a "public method" to prototype
  * Refer to http://www.crockford.com/javascript/inheritance.html.
  */
