@@ -16,13 +16,11 @@ var DListNode = (function () {
         if (arguments.length == 0) throw new Error('Constructor requires value.');
 
         this.value = value;
-        this.next = (next == null ? null : next);
-        if (next != null) {
-            next.prev = single ? null : this;
-        }
         this.prev = null;
+        this.next = null;
+        this.connect(next, single);
     }
-        .method('connect', function (dListNode) {
+        .method('connect', function (dListNode, single) {
             // check arguments:
             // todo
 
@@ -30,8 +28,8 @@ var DListNode = (function () {
                 this.next.prev = null;
             }
 
-            this.next = dListNode;
-            if (dListNode) dListNode.prev = this;
+            this.next = dListNode ? dListNode : null;
+            if (dListNode) dListNode.prev = single ? null : this;
             return this.next;
         });
 })();
@@ -147,6 +145,54 @@ var DLinkedList = (function (SuperList, SuperLinkedList, Node) {
         })
         .method('pushList', function (list, clone) {
             return LinkedList.prototype.pushList.call(this, list, clone)._updateHeadRear();
+        })
+        .method('rpush', function (value, clone) {
+            return LinkedList.prototype.rpush.call(this, value, clone)._updateHeadRear();
+        })
+        .method('rpushList', function (list, clone) {
+            return LinkedList.prototype.rpushList.call(this, list, clone)._updateHeadRear();
+        })
+        .method('pop', function () {
+            if(this.isEmpty()) return this;
+            if(this.size() == 1) {
+                this._front = this._back = null;
+                this._size = 0;
+            } else {
+                var lastSecondNode = this.back().prev;
+                this._back.prev = null;
+                this._back = lastSecondNode;
+                this._back.next = null;
+                this._size--;
+            }
+            return this._updateHeadRear();
+        })
+        .method('rpop', function () {
+            if(this.isEmpty()) return this;
+            if(this.size() == 1) {
+                this._front = this._back = null;
+                this._size = 0;
+            } else {
+                var secondNode = this.front().next;
+                this._front.next = null;
+                this._front = secondNode;
+                this._front.prev = null;
+                this._size--;
+            }
+            return this._updateHeadRear();
+        })
+        .method('rtoString', function () {
+            var p = this._back;
+            if(!p) return "empty list";
+            var str = this._back.value.toString();
+            while (p.prev !== null) {
+                p = p.prev;
+                str += " <- " + p.value.toString();
+            }
+            //this._front = p;
+            return str;
+        })
+        .method('rprint', function () {
+            console.log(this.rtoString());
         });
 })(List, LinkedList, DListNode);
 

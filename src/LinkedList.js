@@ -16,13 +16,14 @@ var ListNode = (function () {
         if (arguments.length == 0) throw new Error('Constructor requires value.');
 
         this.value = value;
-        this.next = (next == null ? null : next);
+        this.next = null;
+        this.connect(next);
     }
         .method('connect', function (listNode) {
             // check arguments:
             // todo
 
-            this.next = listNode;
+            this.next = listNode ? listNode : null;
             return this.next;
         });
 })();
@@ -212,7 +213,7 @@ var LinkedList = (function (SuperList, Node) {
     /**
      * prepend a listNode
      */
-        .method('insert', function (value, clone) {
+        .method('rpush', function (value, clone) {
             // check arguments:
             // todo
 
@@ -235,7 +236,7 @@ var LinkedList = (function (SuperList, Node) {
     /**
      * prepend a list
      */
-        .method('insertList', function (list, clone) {
+        .method('rpushList', function (list, clone) {
             // check arguments:
             // todo
 
@@ -243,7 +244,7 @@ var LinkedList = (function (SuperList, Node) {
 
             var listSize = list.size();
 
-            // cannot insert the list for no space:
+            // cannot rpush the list for no space:
             if (this._capacity > 0 && this._capacity < (this._size + listSize)) return this;
 
             var listIterator = list.back();
@@ -262,7 +263,7 @@ var LinkedList = (function (SuperList, Node) {
                 if (count > listSize) count = listSize;
 
                 while (count > 0 && listIterator !== null) {
-                    this.insert(listIterator.value, true);
+                    this.rpush(listIterator.value, true);
                     listIterator = listIterator.next;
                     count--;
                 }
@@ -273,12 +274,13 @@ var LinkedList = (function (SuperList, Node) {
         })
         .method('toString', function () {
             var p = this._front;
+            if(!p) return "empty list";
             var str = this._front.value.toString();
             while (p.next !== null) {
                 p = p.next;
                 str += " -> " + p.value.toString();
             }
-            this._back = p;
+            //this._back = p;
             return str;
         });
 })(List, ListNode);

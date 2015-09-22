@@ -15,7 +15,7 @@ var Stack = (function (SuperArrayList) {
         // check arguments:
         // todo
 
-        SuperArrayList.call(this, sizeLimit, arr, clone);
+        SuperArrayList.apply(this, arguments);
     }
         .inherits(SuperArrayList)
         .method('top', function () {

@@ -98,10 +98,10 @@ var List = (function () {
             }
             return this;
         })
-        .method('insert', function (value, clone) {
+        .method('rpush', function (value, clone) {
             return 'tobe overridden';
         })
-        .method('insertArray', function (arr, clone) {
+        .method('rpushArray', function (arr, clone) {
             // check arguments:
             // todo
 
@@ -111,7 +111,7 @@ var List = (function () {
             if (count > arr.length) count = arr.length;
 
             for (var i = 0; i < count; i++) {
-                this.insert(arr[i], clone);
+                this.rpush(arr[i], clone);
             }
             return this;
         })
