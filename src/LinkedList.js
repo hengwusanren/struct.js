@@ -148,11 +148,26 @@ var LinkedList = (function (SuperList, Node) {
 
             return this.compareLists([this, list], comparator);
         })
-        .method('push', function (value, clone) {
+        .method('push', function (value, clone, asArray) {
             // check arguments:
             // todo
 
             if (this.isFull()) return this;
+
+            if(asArray) {
+                if(!Array.isArray(value)) return this;
+
+                var arrLen = value.length;
+
+                // cannot push the array for no space:
+                if (this._capacity > 0 && this._capacity < (this._size + arrLen)) return this;
+
+                for(var i = 0; i < arrLen; i++) {
+                    this.push(value[i], clone);
+                }
+
+                return this;
+            }
 
             var listNode = this.newNode(clone ? Object.clone(value) : value);
             this._back = this._getBackNode();
@@ -211,11 +226,26 @@ var LinkedList = (function (SuperList, Node) {
     /**
      * prepend a listNode
      */
-        .method('rpush', function (value, clone) {
+        .method('rpush', function (value, clone, asArray) {
             // check arguments:
             // todo
 
             if (this.isFull()) return this;
+
+            if(asArray) {
+                if(!Array.isArray(value)) return this;
+
+                var arrLen = value.length;
+
+                // cannot push the array for no space:
+                if (this._capacity > 0 && this._capacity < (this._size + arrLen)) return this;
+
+                for(var i = arrLen - 1; i >= 0; i--) {
+                    this.rpush(value[i], clone);
+                }
+
+                return this;
+            }
 
             var listNode = this.newNode(clone ? Object.clone(value) : value);
             this._front = this._getFrontNode();

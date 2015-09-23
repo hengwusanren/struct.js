@@ -79,6 +79,15 @@ var Graph = (function (Node, Map) {
         this._nodeType = Node;
 
         this._nodes = new Map();
+
+        var counter = 0;
+
+        this.allocId = function () {
+            while(this._nodes.has(counter)) {
+                counter++;
+            }
+            return counter;
+        };
     }
         .method('size', function () {
             return this._nodes.size();
@@ -96,7 +105,9 @@ var Graph = (function (Node, Map) {
             // check arguments:
             // todo
 
-            if(arguments.length < 2) var id = this.size() + 1;
+            if(arguments.length < 2) {
+                var id = this.allocId();
+            }
             this._nodes.put(id, this.newNode(value, id));
             return this;
         });

@@ -55,13 +55,75 @@ var ArrayList = (function (SuperList) {
         .method('back', function () {
             return this._size > 0 ? this._data[this._data.length - 1] : null;
         })
-        .method('push', function (value, clone) {
+        .method('get', function (index) {
+            // check arguments:
+            // todo
+
+            return this._data[index];
+        })
+        .method('set', function (index, value) {
+            // check arguments:
+            // todo
+
+            this._data[index] = value;
+            return this;
+        })
+        .method('push', function (value, clone, asArray) {
             // check arguments:
             // todo
 
             if (this.isFull()) return this;
 
+            if(asArray) {
+                if(!Array.isArray(value)) return this;
+
+                var arrLen = value.length;
+
+                // cannot push the array for no space:
+                if (this._capacity > 0 && this._capacity < (this._size + arrLen)) return this;
+
+                if(clone) {
+                    for(var i = 0; i < arrLen; i++) {
+                        this.push(value[i], true);
+                    }
+                } else {
+                    this._data = this._data.concat(value);
+                    this._size += arrLen;
+                }
+                return this;
+            }
+
             this._data.push(clone ? Object.clone(value) : value);
+            this._size++;
+
+            return this;
+        })
+        .method('rpush', function (value, clone, asArray) {
+            // check arguments:
+            // todo
+
+            if (this.isFull()) return this;
+
+            if(asArray) {
+                if(!Array.isArray(value)) return this;
+
+                var arrLen = value.length;
+
+                // cannot push the array for no space:
+                if (this._capacity > 0 && this._capacity < (this._size + arrLen)) return this;
+
+                if(clone) {
+                    for(var i = arrLen - 1; i >= 0; i--) {
+                        this.rpush(value[i], true);
+                    }
+                } else {
+                    this._data = value.concat(this._data);
+                    this._size += arrLen;
+                }
+                return this;
+            }
+
+            this._data.unshift(clone ? Object.clone(value) : value);
             this._size++;
 
             return this;
@@ -72,6 +134,41 @@ var ArrayList = (function (SuperList) {
                 this._size--;
             }
             return this;
+        })
+        .method('rpop', function () {
+            if (!this.isEmpty()) {
+                this._size--;
+            }
+            this._data.shift();
+            return this;
+        })
+        .method('indexOf', function (value, comparator) {
+            // check arguments:
+            // todo
+
+            if(!comparator) {
+                var comparator = function (v1, v2) { return v1 == v2 };
+            }
+            for(var i = 0, len = this._data.length; i < len; i++) {
+                if(comparator(this._data[i], value)) {
+                    return i;
+                }
+            }
+            return -1;
+        })
+        .method('rindexOf', function (value, comparator) {
+            // check arguments:
+            // todo
+
+            if(!comparator) {
+                var comparator = function (v1, v2) { return v1 == v2 };
+            }
+            for(var i = this._data.length - 1; i >= 0; i--) {
+                if(comparator(this._data[i], value)) {
+                    return i;
+                }
+            }
+            return -1;
         })
         .method('clear', function () {
             this._data.length = 0;

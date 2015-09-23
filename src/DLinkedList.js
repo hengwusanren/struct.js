@@ -140,14 +140,14 @@ var DLinkedList = (function (SuperList, SuperLinkedList, Node) {
         .method('reverse', function () {
             return LinkedList.prototype.reverse.call(this)._updateHeadRear();
         })
-        .method('push', function (value, clone) {
-            return LinkedList.prototype.push.call(this, value, clone)._updateHeadRear();
+        .method('push', function (value, clone, asArray) {
+            return LinkedList.prototype.push.call(this, value, clone, asArray)._updateHeadRear();
         })
         .method('pushList', function (list, clone) {
             return LinkedList.prototype.pushList.call(this, list, clone)._updateHeadRear();
         })
-        .method('rpush', function (value, clone) {
-            return LinkedList.prototype.rpush.call(this, value, clone)._updateHeadRear();
+        .method('rpush', function (value, clone, asArray) {
+            return LinkedList.prototype.rpush.call(this, value, clone, asArray)._updateHeadRear();
         })
         .method('rpushList', function (list, clone) {
             return LinkedList.prototype.rpushList.call(this, list, clone)._updateHeadRear();
