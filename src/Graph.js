@@ -60,6 +60,17 @@ var GraphNode = (function (Map) {
 
             this.edges.remove(graphNode.id());
             return this;
+        })
+        .method('toString', function () {
+            var str = "{\n";
+            str += "id: " + this.id().toString() + ",\n";
+            str += "value: " + this.value.toString() + ",\n";
+            str += "edges: " + this.edges.toString() + "\n";
+            str += "}";
+            return str;
+        })
+        .method('print', function () {
+            console.log(this.toString());
         });
 })(HashTable);
 
@@ -110,5 +121,11 @@ var Graph = (function (Node, Map) {
             }
             this._nodes.put(id, this.newNode(value, id));
             return this;
+        })
+        .method('toString', function () {
+            return this._nodes.toString();
+        })
+        .method('print', function () {
+            console.log(this.toString());
         });
 })(GraphNode, HashTable);

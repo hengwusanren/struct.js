@@ -2,6 +2,85 @@
  * Created by v-kshe on 9/15/2015.
  */
 
+
+/**
+ * generate hash code of string
+ * @returns {number}
+ */
+String.prototype.hashCode = function () {
+    var hash = 0, i, chr, len;
+    if (this.length == 0) return hash;
+    for (i = 0, len = this.length; i < len; i++) {
+        chr = this.charCodeAt(i);
+        hash = ((hash << 5) - hash) + chr;
+        hash |= 0; // Convert to 32bit integer
+    }
+    return hash;
+};
+/**
+ * string trim, to remove the white space in the front or back
+ * @returns {string}
+ */
+String.prototype.trim = function () {
+    var reExtraSpace = /^\s*(.*?)\s+$/;
+    return this.replace(reExtraSpace, "$1");
+};
+String.prototype.ltrim = function () {
+    return this.replace(/^(\s*|　*)/, "");
+};
+String.prototype.rtrim = function () {
+    return this.replace(/(\s*|　*)$/, "");
+};
+/**
+ * string replaceAll
+ * @param s1
+ * @param s2
+ * @returns {string}
+ */
+String.prototype.replaceAll = function (s1, s2) {
+    return this.replace(new RegExp(s1, "gm"), s2);
+};
+/**
+ * string starts with pattern
+ * @param p
+ * @returns {boolean}
+ */
+String.prototype.startWith = function (p) {
+    return this.indexOf(p) == 0;
+};
+/**
+ * string ends with pattern
+ * @param p
+ * @returns {boolean}
+ */
+String.prototype.endWith = function (p) {
+    var d = this.length - p.length;
+    return (d >= 0 && this.lastIndexOf(p) == d)
+};
+/**
+ * format a Date obj
+ * @param formatStr
+ * @returns {*}
+ */
+Date.prototype.format = function (formatStr) {
+    var str = formatStr;
+    var Week = ['日', '一', '二', '三', '四', '五', '六'];
+    str = str.replace(/yyyy|YYYY/, this.getFullYear());
+    str = str.replace(/yy|YY/, (this.getYear() % 100) > 9 ? (this.getYear() % 100).toString() : '0' + (this.getYear() % 100));
+    str = str.replace(/MM/, (this.getMonth() + 1) > 9 ? (this.getMonth() + 1).toString() : '0' + (this.getMonth() + 1));
+    str = str.replace(/M/g, (this.getMonth() + 1));
+    str = str.replace(/w|W/g, Week[this.getDay()]);
+    str = str.replace(/dd|DD/, this.getDate() > 9 ? this.getDate().toString() : '0' + this.getDate());
+    str = str.replace(/d|D/g, this.getDate());
+    str = str.replace(/hh|HH/, this.getHours() > 9 ? this.getHours().toString() : '0' + this.getHours());
+    str = str.replace(/h|H/g, this.getHours());
+    str = str.replace(/mm/, this.getMinutes() > 9 ? this.getMinutes().toString() : '0' + this.getMinutes());
+    str = str.replace(/m/g, this.getMinutes());
+    str = str.replace(/ss|SS/, this.getSeconds() > 9 ? this.getSeconds().toString() : '0' + this.getSeconds());
+    str = str.replace(/s|S/g, this.getSeconds());
+    return str;
+};
+
 /**
  * create a new object
  * e.g: var newObject = Object.create(oldObject);
@@ -72,10 +151,16 @@ function Guid() {
  * Refer to http://www.crockford.com/javascript/inheritance.html.
  */
 Function.prototype.method = function(name, func) {
-    //if (!this.prototype[name]) {
-        this.prototype[name] = func;
-        return this;
-    //}
+    var names = name.split(' ');
+    for(var i = 0, len = names.length; i < len; i++) {
+        names[i] = names[i].trim();
+        if(names[i] == '') continue;
+
+        //if (!this.prototype[name]) {
+        this.prototype[names[i]] = func;
+        //}
+    }
+    return this;
 };
 
 /**

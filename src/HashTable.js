@@ -13,12 +13,15 @@ var HashTable = (function () {
         // check arguments:
         // todo
 
-        this._table = new Object();
+        this._table = {};
         this._size = 0;
 
         //this._valueComparator = function (v1, v2) { return v1 == v2 };
     }
-        .method('has', function (key) {
+        .method('map data', function () {
+            return this._table;
+        })
+        .method('has contains find', function (key) {
             // check arguments:
             // todo
 
@@ -118,5 +121,35 @@ var HashTable = (function () {
             this._table = new Object();
             this._size = 0;
             return this;
+        })
+        .method('toString', function () {
+            var str = "{\n";
+            for( var key in this._table) {
+                str += key + ": " + this._table[key].toString() + ",\n";
+            }
+            str += "}";
+            return str;
+        })
+        .method('toString', function () {
+            var str = "{";
+            if ((function(obj){
+                    for (var k in obj) {
+                        if(!obj.hasOwnProperty(k)) continue;
+                        return true;
+                    }
+                    return false;
+                })(this._table)) {
+                str += "\n";
+                for (var key in this._table) {
+                    if(!this._table.hasOwnProperty(key)) continue;
+                    str += key + ": " + this._table[key].toString() + ",\n";
+                }
+                str = str.substr(0, str.length - 2);
+            }
+            str += "\n}";
+            return str;
+        })
+        .method('print', function () {
+            console.log(this.toString());
         });
 })();
