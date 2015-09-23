@@ -300,6 +300,33 @@ var LinkedList = (function (SuperList, Node) {
 
             return this;
         })
+        .method('each', function (callback) {
+            // check arguments:
+            // todo
+
+            var head = this.front();
+            while(head != null) {
+                callback(head.value);
+                head = head.next;
+            }
+            return this;
+        })
+        .method('find', function (value, comparator) {
+            // check arguments:
+            // todo
+
+            // todo
+
+            return this;
+        })
+        .method('findAll', function (value, comparator) {
+            // check arguments:
+            // todo
+
+            // todo
+
+            return this;
+        })
         .method('toString', function () {
             var p = this._front;
             if(!p) return "empty list";

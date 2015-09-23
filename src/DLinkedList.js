@@ -180,6 +180,14 @@ var DLinkedList = (function (SuperList, SuperLinkedList, Node) {
             }
             return this._updateHeadRear();
         })
+        .method('rfind', function (value, comparator) {
+            // check arguments:
+            // todo
+
+            // todo
+
+            return this;
+        })
         .method('rtoString', function () {
             var p = this._back;
             if(!p) return "empty list";

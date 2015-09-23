@@ -142,7 +142,7 @@ var ArrayList = (function (SuperList) {
             this._data.shift();
             return this;
         })
-        .method('indexOf', function (value, comparator) {
+        .method('indexOf find', function (value, comparator) {
             // check arguments:
             // todo
 
@@ -156,7 +156,32 @@ var ArrayList = (function (SuperList) {
             }
             return -1;
         })
-        .method('rindexOf', function (value, comparator) {
+        .method('each', function (callback) {
+            // check arguments:
+            // todo
+
+            for(var i = 0, len = this._data.length; i < len; i++) {
+                callback(this._data[i]);
+            }
+            return this;
+        })
+        .method('findAll', function (value, comparator) {
+            // check arguments:
+            // todo
+
+            // todo
+
+            return this;
+        })
+        .method('findAllValues', function (value, comparator) {
+            // check arguments:
+            // todo
+
+            // todo
+
+            return this;
+        })
+        .method('rindexOf rfind', function (value, comparator) {
             // check arguments:
             // todo
 

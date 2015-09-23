@@ -17,5 +17,21 @@ var Queue = (function (SuperDLinkedList) {
 
         SuperDLinkedList.apply(this, arguments);
     }
-        .inherits(SuperDLinkedList);
+        .inherits(SuperDLinkedList)
+        .method('popUntil', function (value, comparator) {
+            // check arguments:
+            // todo
+
+            // todo
+
+            return this;
+        })
+        .method('rpopUntil', function (value, comparator) {
+            // check arguments:
+            // todo
+
+            // todo
+
+            return this;
+        });
 })(DLinkedList);

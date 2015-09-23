@@ -68,7 +68,7 @@ var HashTable = (function () {
             }
             return false;
         })
-        .method('getKeyOfValue', function (value, comparator) {
+        .method('getKey find', function (value, comparator) {
             // check arguments:
             // todo
 
@@ -82,24 +82,26 @@ var HashTable = (function () {
             }
             return null;
         })
-        .method('getKeys', function () {
-            var keys = new Array();
-            for (var key in this._table) {
-                keys.push(key);
-            }
-            return keys;
-        })
-        .method('getKeysOfValue', function (value, comparator) {
+        .method('getKeys findAll', function (value, comparator) {
             // check arguments:
             // todo
 
-            if(!comparator) {
-                var comparator = function (v1, v2) { return v1 == v2 };
-            }
             var keys = new Array();
-            for (var key in this._table) {
-                if(comparator(this._table[key], value)) {
+
+            if(arguments.length == 0) {
+                for (var key in this._table) {
+                    if(!this._table.hasOwnProperty(key)) continue;
                     keys.push(key);
+                }
+            } else {
+                if(!comparator) {
+                    var comparator = function (v1, v2) { return v1 == v2 };
+                }
+                for (var key in this._table) {
+                    if(!this._table.hasOwnProperty(key)) continue;
+                    if(comparator(this._table[key], value)) {
+                        keys.push(key);
+                    }
                 }
             }
             return keys;
@@ -111,7 +113,7 @@ var HashTable = (function () {
             if(!comparator) {
                 var comparator = function (v1, v2) { return v1 == v2 };
             }
-            var keys = this.getKeysOfValue(value, comparator);
+            var keys = this.getKeys(value, comparator);
             for (var i = 0, len = keys.length; i < len; i++) {
                 this.remove(keys[i]);
             }
@@ -125,6 +127,7 @@ var HashTable = (function () {
         .method('toString', function () {
             var str = "{\n";
             for( var key in this._table) {
+                if(!this._table.hasOwnProperty(key)) continue;
                 str += key + ": " + this._table[key].toString() + ",\n";
             }
             str += "}";

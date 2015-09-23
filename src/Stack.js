@@ -20,6 +20,14 @@ var Stack = (function (SuperArrayList) {
         .inherits(SuperArrayList)
         .method('top', function () {
             return this.back();
+        })
+        .method('popUntil', function (value, comparator) {
+            // check arguments:
+            // todo
+
+            // todo
+
+            return this;
         });
 })(ArrayList);
 
