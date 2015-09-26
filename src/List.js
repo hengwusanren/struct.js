@@ -55,6 +55,7 @@ var List = (function () {
          */
         this._back = null;
     }
+        .implements()
         .method('front', function () {
             return this._front;
         })

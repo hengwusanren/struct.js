@@ -147,7 +147,7 @@ function Guid() {
 }
 
 /**
- * add a "public method" to prototype
+ * add a public method named "method" to prototype
  * Refer to http://www.crockford.com/javascript/inheritance.html.
  */
 Function.prototype.method = function(name, func) {
@@ -171,6 +171,17 @@ Function.method('inherits', function(F) {
     InheritPrototype(this, F);
 
     return this;
+});
+
+/**
+ * allow this constructor to implement something, such as Iterator
+ */
+Function.method('implements', function() {
+    return this.method('implements', function(F, args) {
+        F.apply(this, args);
+
+        return this;
+    });
 });
 
 

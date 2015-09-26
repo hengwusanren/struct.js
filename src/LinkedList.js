@@ -31,7 +31,7 @@ var ListNode = (function () {
 /********************************
  * LinkedList
  ********************************/
-var LinkedList = (function (SuperList, Node) {
+var LinkedList = (function (SuperList, Node, Iter) {
 
     "use strict";
 
@@ -49,6 +49,25 @@ var LinkedList = (function (SuperList, Node) {
             null : this.newNode(value);
 
         this._updateBackNode();
+
+        this.implements(Iter, [
+            function (node) {
+                // what if node does not exist?
+                // todo
+
+                return node;
+            },
+            function (node) {
+                return node.next;
+            },
+            null,
+            function () {
+                return this.front();
+            },
+            function () {
+                return this.back();
+            }
+        ]);
     }
         .inherits(SuperList)
         .method('_getFrontNode', function () {
@@ -338,7 +357,7 @@ var LinkedList = (function (SuperList, Node) {
             //this._back = p;
             return str;
         });
-})(List, ListNode);
+})(List, ListNode, Iterator);
 
 
 (function () { // test

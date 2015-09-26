@@ -5,7 +5,7 @@
 /********************************
  * ArrayList
  ********************************/
-var ArrayList = (function (SuperList) {
+var ArrayList = (function (SuperList, Iter) {
 
     "use strict";
 
@@ -30,6 +30,29 @@ var ArrayList = (function (SuperList) {
         }
 
         // notice: _front and _back are useless to ArrayList
+
+        this.implements(Iter, [
+            function (index) {
+                // what if node does not exist?
+                // todo
+
+                return this.get(index);
+            },
+            function (index) {
+                index++;
+                return index == this.size() ? null : index;
+            },
+            function (index) {
+                index--;
+                return index == -1 ? null : index;
+            },
+            function () {
+                return this.front();
+            },
+            function () {
+                return this.back();
+            }
+        ]);
     }
         .inherits(SuperList)
         .method('resizeTo', function (sizeLimit) {
@@ -218,7 +241,7 @@ var ArrayList = (function (SuperList) {
             this._data.sort(comparator);
             return this;
         });
-})(List);
+})(List, Iterator);
 
 
 (function () { // test

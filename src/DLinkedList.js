@@ -37,7 +37,7 @@ var DListNode = (function () {
 /********************************
  * DLinkedList
  ********************************/
-var DLinkedList = (function (SuperList, SuperLinkedList, Node) {
+var DLinkedList = (function (SuperList, SuperLinkedList, Node, Iter) {
 
     "use strict";
 
@@ -62,6 +62,27 @@ var DLinkedList = (function (SuperList, SuperLinkedList, Node) {
         this._updateHeadRear();
 
         //this._reversed = false;
+
+        this.implements(Iter, [
+            function (node) {
+                // what if node does not exist?
+                // todo
+
+                return node;
+            },
+            function (node) {
+                return node.next;
+            },
+            function (node) {
+                return node.prev;
+            },
+            function () {
+                return this.front();
+            },
+            function () {
+                return this.back();
+            }
+        ]);
     }
         .inherits(SuperLinkedList)
         .method('_getFrontNode', function () {
@@ -202,7 +223,7 @@ var DLinkedList = (function (SuperList, SuperLinkedList, Node) {
         .method('rprint', function () {
             console.log(this.rtoString());
         });
-})(List, LinkedList, DListNode);
+})(List, LinkedList, DListNode, Iterator);
 
 
 (function () { // test

@@ -47,14 +47,17 @@ var GraphNode = (function (Map) {
         .method('id', function () {
             return this._id;
         })
-        .method('connect', function (graphNode, edgeValue) {
+        .method('edges getNeighbors', function () {
+            return this.edges;
+        })
+        .method('connect addEdge', function (graphNode, edgeValue) {
             // check arguments:
             // todo
 
             this.edges.put(graphNode.id(), edgeValue);
             return this;
         })
-        .method('disconnect', function (graphNode) {
+        .method('disconnect removeEdge', function (graphNode) {
             // check arguments:
             // todo
 
@@ -121,6 +124,19 @@ var Graph = (function (Node, Map) {
             }
             this._nodes.put(id, this.newNode(value, id));
             return this;
+        })
+        .method('get', function (id) {
+            // check arguments:
+            // todo
+
+            return this._nodes.get(id);
+        })
+        .method('getNeighborsOfNode', function (id) {
+            // check arguments:
+            // todo
+
+            var node = this._nodes.get(id);
+            return node.getNeighbors();
         })
         .method('toString', function () {
             return this._nodes.toString();

@@ -5,9 +5,11 @@
 /********************************
  * HashTable
  ********************************/
-var HashTable = (function () {
+var HashTable = (function (Iter) {
 
     "use strict";
+
+    if (!Iter) return null;
 
     return function (size, loadFactor) {
         // check arguments:
@@ -17,7 +19,18 @@ var HashTable = (function () {
         this._size = 0;
 
         //this._valueComparator = function (v1, v2) { return v1 == v2 };
+
+        this.implements(Iter, [
+            function (key) {
+                return this.get(key);
+            },
+            null,
+            null,
+            null,
+            null
+        ]);
     }
+        .implements()
         .method('map data', function () {
             return this._table;
         })
@@ -125,15 +138,6 @@ var HashTable = (function () {
             return this;
         })
         .method('toString', function () {
-            var str = "{\n";
-            for( var key in this._table) {
-                if(!this._table.hasOwnProperty(key)) continue;
-                str += key + ": " + this._table[key].toString() + ",\n";
-            }
-            str += "}";
-            return str;
-        })
-        .method('toString', function () {
             var str = "{";
             if ((function(obj){
                     for (var k in obj) {
@@ -155,4 +159,4 @@ var HashTable = (function () {
         .method('print', function () {
             console.log(this.toString());
         });
-})();
+})(Iterator);
