@@ -3,10 +3,13 @@
  */
 
 var Identifier = function (id, numeric) {
+
+    "use strict";
+
     // check arguments:
     // todo
 
-    if(!isNaN(parseInt(id))) {
+    if(id != null && !isNaN(parseInt(id))) {
         Object.defineProperty(this, '_id', {
             value: parseInt(id),
             writable: false

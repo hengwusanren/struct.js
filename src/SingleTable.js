@@ -1,11 +1,11 @@
 /**
- * Created by hengwu on 2015/9/27.
+ * Created by hengwu on 2015/9/22.
  */
 
 /********************************
- * HashTable
+ * SingleTable
  ********************************/
-var HashTable = (function (Iter) {
+var SingleTable = (function (Iter) {
 
     "use strict";
 
@@ -42,87 +42,32 @@ var HashTable = (function (Iter) {
             this._size = 0;
             return this;
         })
-        .method('_hasInLine', function (realKey, hashKey) {
-            // todo
-
-            if(arguments.length < 2) {
-                if(!realKey.hashCode) {
-                    throw new Error('The type of key should implement hashCode method.');
-                    return false;
-                }
-                var hashKey = realKey.hashCode();
-            }
-
-            // todo
-        })
-        .method('has contains', function (realKey) {
+        .method('has contains', function (key) {
             // check arguments:
             // todo
 
-            // todo
+            return key in this._table;
         })
-        .method('_getInLine', function (realKey, hashKey) {
-            // todo
-
-            if(arguments.length < 2) {
-                if(!realKey.hashCode) {
-                    throw new Error('The type of key should implement hashCode method.');
-                    return false;
-                }
-                var hashKey = realKey.hashCode();
-            }
-
-            // todo
-        })
-        .method('get', function (realKey) {
+        .method('get', function (key) {
             // check arguments:
             // todo
 
-            // todo
+            return this.has(key) ? this._table[key] : null;
         })
-        .method('_putInLine', function (realKey, value, hashKey) {
-            // todo
-
-            if(arguments.length < 3) {
-                if(!realKey.hashCode) {
-                    throw new Error('The type of key should implement hashCode method.');
-                    return false;
-                }
-                var hashKey = realKey.hashCode();
-            }
-
-            // todo
-        })
-        .method('put', function (realKey, value) {
+        .method('put', function (key, value) {
             // check arguments:
             // todo
 
-            if (!this.has(realKey)) this._size++;
-
-            // todo
+            if (!this.has(key)) this._size++;
+            this._table[key] = value;
 
             return this;
         })
-        .method('_removeInLine', function (realKey, hashKey) {
-            // todo
-
-            if(arguments.length < 2) {
-                if(!realKey.hashCode) {
-                    throw new Error('The type of key should implement hashCode method.');
-                    return false;
-                }
-                var hashKey = realKey.hashCode();
-            }
-
-            // todo
-
-            return true;
-        })
-        .method('remove', function (realKey) {
+        .method('remove', function (key) {
             // check arguments:
             // todo
 
-            if (this.has(realKey) && this._removeInLine(realKey)) {
+            if (this.has(key) && (delete this._table[key])) {
                 this._size--;
             }
             return this;
@@ -134,9 +79,11 @@ var HashTable = (function (Iter) {
             if(!comparator) {
                 var comparator = function (v1, v2) { return v1 == v2 };
             }
-            for (var hashKey in this._table) {
-                if(!this._table.hasOwnProperty(hashKey)) continue;
-                // todo
+            for (var key in this._table) {
+                if(!this._table.hasOwnProperty(key)) continue;
+                if (comparator(this._table[key], value)) {
+                    return true;
+                }
             }
             return false;
         })
@@ -147,9 +94,11 @@ var HashTable = (function (Iter) {
             if(!comparator) {
                 var comparator = function (v1, v2) { return v1 == v2 };
             }
-            for (var hashKey in this._table) {
-                if(!this._table.hasOwnProperty(hashKey)) continue;
-                // todo
+            for (var key in this._table) {
+                if(!this._table.hasOwnProperty(key)) continue;
+                if (comparator(this._table[key], value)) {
+                    return key;
+                }
             }
             return null;
         })
@@ -160,17 +109,19 @@ var HashTable = (function (Iter) {
             var keys = new Array();
 
             if(arguments.length == 0) {
-                for (var hashKey in this._table) {
-                    if(!this._table.hasOwnProperty(hashKey)) continue;
-                    // todo
+                for (var key in this._table) {
+                    if(!this._table.hasOwnProperty(key)) continue;
+                    keys.push(key);
                 }
             } else {
                 if(!comparator) {
                     var comparator = function (v1, v2) { return v1 == v2 };
                 }
-                for (var hashKey in this._table) {
-                    if(!this._table.hasOwnProperty(hashKey)) continue;
-                    // todo
+                for (var key in this._table) {
+                    if(!this._table.hasOwnProperty(key)) continue;
+                    if(comparator(this._table[key], value)) {
+                        keys.push(key);
+                    }
                 }
             }
             return keys;
@@ -182,9 +133,10 @@ var HashTable = (function (Iter) {
             if(!comparator) {
                 var comparator = function (v1, v2) { return v1 == v2 };
             }
-
-            // todo
-
+            var keys = this.getKeys(value, comparator);
+            for (var i = 0, len = keys.length; i < len; i++) {
+                this.remove(keys[i]);
+            }
             return this;
         })
         .method('toString', function () {
@@ -197,12 +149,9 @@ var HashTable = (function (Iter) {
                     return false;
                 })(this._table)) {
                 str += "\n";
-                for (var hashKey in this._table) {
-                    if(!this._table.hasOwnProperty(hashKey)) continue;
-
-                    // todo
-
-                    str += ",\n";
+                for (var key in this._table) {
+                    if(!this._table.hasOwnProperty(key)) continue;
+                    str += key + ": " + this._table[key].toString() + ",\n";
                 }
                 str = str.substr(0, str.length - 2);
             }

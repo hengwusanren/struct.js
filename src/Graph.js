@@ -31,14 +31,22 @@ var GraphNode = (function (Map, Ider) {
         /**
          * edges that start from this node
          * key is a node's guid, value is the value of this edge, e.g. weight.
-         * @type {HashTable}
+         * @type {SingleTable}
          */
         this.edges = new Map();
     }
         .implements()
+    /**
+     * get the edges starting from this node,
+     * which means all the nodes connected with this node.
+     */
         .method('edges getNeighbors', function () {
             return this.edges;
         })
+    /**
+     * connect this node with another node,
+     * given another node or id, and some extra info of this edge.
+     */
         .method('connect addEdge addNeighbor', function (nodeId, edgeValue, asNode) {
             // check arguments:
             // todo
@@ -46,6 +54,10 @@ var GraphNode = (function (Map, Ider) {
             this.edges.put(asNode ? nodeId.id() : nodeId, edgeValue);
             return this;
         })
+    /**
+     * disconnect this node with another node,
+     * given another node or id.
+     */
         .method('disconnect removeEdge removeNeighbor', function (nodeId, asNode) {
             // check arguments:
             // todo
@@ -64,7 +76,7 @@ var GraphNode = (function (Map, Ider) {
         .method('print', function () {
             console.log(this.toString());
         });
-})(HashTable, Identifier);
+})(SingleTable, Identifier);
 
 /********************************
  * Graph
@@ -106,26 +118,43 @@ var Graph = (function (Node, Map) {
         .method('size', function () {
             return this._nodes.size();
         })
+    /**
+     * call the node constructor to create a node
+     */
         .method('newNode', function () {
             return Construct(this._nodeType, true, arguments);
         })
+    /**
+     * get the node from this graph,
+     * given a node's id or itself.
+     */
         .method('getNode', function (d, asNode) {
             // check arguments:
             // todo
 
             return this._nodes.get(asNode ? d.id() : d);
         })
+    /**
+     * see if the node is in this graph,
+     * given a node's id or itself.
+     */
         .method('hasNode', function (d, asNode) {
             // check arguments:
             // todo
 
             return this._nodes.has(asNode ? d.id() : d);
         })
+    /**
+     * add a node to this graph,
+     * case1: given the new node's value, and an optional id,
+     * case2: given a new node directly.
+     * actually, case2 is impossible because all nodes should be created by the graph.
+     */
         .method('addNode', function (value, id, asNode) {
             // check arguments:
             // todo
 
-            if(!asNode && !id) {
+            if(!asNode && id == null) {
                 var id = this.allocId();
             } else if(asNode) {
                 var id = value.id();
@@ -145,7 +174,12 @@ var Graph = (function (Node, Map) {
             this._nodes.remove(asNode ? d.id() : d);
             return this;
         })
-        .method('addEdge ConnectNodes', function (d1, d2, edgeWeight, asNode) {
+    /**
+     * connect node A to node B,
+     * given A and B (or A's id and B's id), and some extra info of the new edge.
+     * notice: if the graph is undirected, connect B to A at the same time.
+     */
+        .method('addEdge', function (d1, d2, edgeWeight, asNode) {
             // check arguments:
             // todo
 
@@ -177,6 +211,11 @@ var Graph = (function (Node, Map) {
 
             return this;
         })
+    /**
+     * disconnect node A to node B,
+     * given A and B (or A's id and B's id).
+     * notice: if the graph is undirected, disconnect B to A at the same time.
+     */
         .method('removeEdge', function (d1, d2, asNode) {
             // check arguments:
             // todo
@@ -207,13 +246,17 @@ var Graph = (function (Node, Map) {
 
             return this;
         })
-        .method('getNeighborsOfNode', function (id) {
+    /**
+     * get the neighbors of a node,
+     * given the node or its id.
+     */
+        .method('getNeighborsOfNode', function (d, asNode) {
             // check arguments:
             // todo
 
-            var node = this.getNode(id);
+            var node = asNode ? d : this.getNode(d);
             if(node == null) {
-                throw new Error('Node ' + id.toString() + ' does not exist.');
+                throw new Error('Node ' + d.toString() + ' does not exist.');
                 return null;
             }
             return node.getNeighbors();
@@ -236,7 +279,7 @@ var Graph = (function (Node, Map) {
 
             return this;
         });
-})(GraphNode, HashTable);
+})(GraphNode, SingleTable);
 
 
 (function () { // test

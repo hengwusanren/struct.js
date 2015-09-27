@@ -7,6 +7,9 @@ var Iterator = function (howToGetElement,
                          howToGetPrevKey,
                          howToGetFirst,
                          howToGetLast) {
+
+    "use strict";
+
     // notice: it's a deal that the Function implementing Iterator
     //     has these methods in arguments.
 
