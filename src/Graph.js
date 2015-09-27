@@ -5,7 +5,7 @@
 /********************************
  * GraphNode
  ********************************/
-var GraphNode = (function (Map) {
+var GraphNode = (function (Map, Ider) {
 
     "use strict";
 
@@ -23,16 +23,10 @@ var GraphNode = (function (Map) {
         this.value = value;
 
         /**
-         * guid of this node
+         * id of this node
+         * in some cases, id can be got in node's value
          */
-        var tmp_id = this.guid();
-        if(arguments.length > 1 && !isNaN(parseInt(id))) {
-            tmp_id = parseInt(id);
-        }
-        Object.defineProperty(this, "_id", {
-            value: tmp_id,
-            writable: false
-        });
+        this.implements(Ider, [id, true]);
 
         /**
          * edges that start from this node
@@ -41,27 +35,22 @@ var GraphNode = (function (Map) {
          */
         this.edges = new Map();
     }
-        .method('guid', function () {
-            return Guid();
-        })
-        .method('id', function () {
-            return this._id;
-        })
+        .implements()
         .method('edges getNeighbors', function () {
             return this.edges;
         })
-        .method('connect addEdge', function (graphNode, edgeValue) {
+        .method('connect addEdge addNeighbor', function (nodeId, edgeValue, asNode) {
             // check arguments:
             // todo
 
-            this.edges.put(graphNode.id(), edgeValue);
+            this.edges.put(asNode ? nodeId.id() : nodeId, edgeValue);
             return this;
         })
-        .method('disconnect removeEdge', function (graphNode) {
+        .method('disconnect removeEdge removeNeighbor', function (nodeId, asNode) {
             // check arguments:
             // todo
 
-            this.edges.remove(graphNode.id());
+            this.edges.remove(asNode ? nodeId.id() : nodeId);
             return this;
         })
         .method('toString', function () {
@@ -75,7 +64,7 @@ var GraphNode = (function (Map) {
         .method('print', function () {
             console.log(this.toString());
         });
-})(HashTable);
+})(HashTable, Identifier);
 
 /********************************
  * Graph
@@ -95,7 +84,6 @@ var Graph = (function (Node, Map) {
         this._nodes = new Map();
 
         var counter = 0;
-
         this.allocId = function () {
             while(this._nodes.has(counter)) {
                 counter++;
@@ -109,33 +97,103 @@ var Graph = (function (Node, Map) {
         .method('newNode', function () {
             return Construct(this._nodeType, true, arguments);
         })
-        .method('node', function (id) {
+        .method('getNode', function (id, asNode) {
             // check arguments:
             // todo
 
-            return this._nodes.get(id);
+            return this._nodes.get(asNode ? id.id() : id);
         })
-        .method('add', function (value, id) {
+        .method('hasNode', function (id, asNode) {
             // check arguments:
             // todo
 
-            if(arguments.length < 2) {
+            return this._nodes.has(asNode ? id.id() : id);
+        })
+        .method('addNode', function (value, id, asNode) {
+            // check arguments:
+            // todo
+
+            if(!asNode && !id) {
                 var id = this.allocId();
+            } else if(asNode) {
+                var id = value.id();
             }
-            this._nodes.put(id, this.newNode(value, id));
+            this._nodes.put(id, asNode ? value : this.newNode(value, id));
             return this;
         })
-        .method('get', function (id) {
+    /**
+     * remove a node
+     * notice: this method of removing node is 'lazy-mode',
+     *     which means we shall remove each edge ending with this node when we visit edges.
+     */
+        .method('removeNode', function (id, asNode) {
             // check arguments:
             // todo
 
-            return this._nodes.get(id);
+            this._nodes.remove(asNode ? id.id() : id);
+            return this;
+        })
+        .method('addEdge ConnectNodes', function (d1, d2, edgeWeight, asNode) {
+            // check arguments:
+            // todo
+
+            if(edgeWeight == null) edgeWeight = 0;
+
+            if(!asNode) {
+                if (!this.hasNode(d1)) {
+                    throw new Error('Node ' + d1.toString() + ' does not exist.');
+                    return this;
+                }
+                if (!this.hasNode(d2)) {
+                    throw new Error('Node ' + d2.toString() + ' does not exist.');
+                    return this;
+                }
+                this.getNode(d1).connect(d2, edgeWeight);
+            } else {
+                if (!this.hasNode(d1, true)) {
+                    this.addNode(d1, null, true);
+                }
+                if (!this.hasNode(d2, true)) {
+                    this.addNode(d2, null, true);
+                }
+                this.getNode(d1, true).connect(d2, edgeWeight, true);
+            }
+            return this;
+        })
+        .method('removeEdge', function (d1, d2, asNode) {
+            // check arguments:
+            // todo
+
+            if(!asNode) {
+                if (!this.hasNode(d1)) {
+                    throw new Error('Node ' + d1.toString() + ' does not exist.');
+                    return this;
+                }
+                if (!this.hasNode(d2)) {
+                    return this;
+                }
+                this.getNode(d1).disconnect(d2);
+            } else {
+                if (!this.hasNode(d1, true)) {
+                    throw new Error('Node ' + d1.toString() + ' does not exist.');
+                    return this;
+                }
+                if (!this.hasNode(d2, true)) {
+                    return this;
+                }
+                this.getNode(d1, true).disconnect(d2, true);
+            }
+            return this;
         })
         .method('getNeighborsOfNode', function (id) {
             // check arguments:
             // todo
 
-            var node = this._nodes.get(id);
+            var node = this.getNode(id);
+            if(node == null) {
+                throw new Error('Node ' + id.toString() + ' does not exist.');
+                return null;
+            }
             return node.getNeighbors();
         })
         .method('toString', function () {

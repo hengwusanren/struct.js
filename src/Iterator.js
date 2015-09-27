@@ -19,7 +19,7 @@ var Iterator = function (howToGetElement,
     }
 
     // notice: key shares the same meaning
-    //     with index, id, and other distinct attribute of a element.
+    //     with index, id, and other distinct attribute of an element.
 
 
     this.iterator = new (function (scope,
