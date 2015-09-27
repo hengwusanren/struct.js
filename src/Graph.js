@@ -75,9 +75,21 @@ var Graph = (function (Node, Map) {
 
     if(!Node || !Map) return null;
 
-    return function () {
+    return function (type) {
         // check arguments:
         // todo
+
+        /**
+         * type of graph
+         * 0: undirected
+         * 1: directed
+         * @type {number}
+         * @private
+         */
+        Object.defineProperty(this, "_type", {
+            value: (type ? 1 : 0),
+            writable: false
+        });
 
         this._nodeType = Node;
 
@@ -97,17 +109,17 @@ var Graph = (function (Node, Map) {
         .method('newNode', function () {
             return Construct(this._nodeType, true, arguments);
         })
-        .method('getNode', function (id, asNode) {
+        .method('getNode', function (d, asNode) {
             // check arguments:
             // todo
 
-            return this._nodes.get(asNode ? id.id() : id);
+            return this._nodes.get(asNode ? d.id() : d);
         })
-        .method('hasNode', function (id, asNode) {
+        .method('hasNode', function (d, asNode) {
             // check arguments:
             // todo
 
-            return this._nodes.has(asNode ? id.id() : id);
+            return this._nodes.has(asNode ? d.id() : d);
         })
         .method('addNode', function (value, id, asNode) {
             // check arguments:
@@ -126,11 +138,11 @@ var Graph = (function (Node, Map) {
      * notice: this method of removing node is 'lazy-mode',
      *     which means we shall remove each edge ending with this node when we visit edges.
      */
-        .method('removeNode', function (id, asNode) {
+        .method('removeNode', function (d, asNode) {
             // check arguments:
             // todo
 
-            this._nodes.remove(asNode ? id.id() : id);
+            this._nodes.remove(asNode ? d.id() : d);
             return this;
         })
         .method('addEdge ConnectNodes', function (d1, d2, edgeWeight, asNode) {
@@ -148,7 +160,6 @@ var Graph = (function (Node, Map) {
                     throw new Error('Node ' + d2.toString() + ' does not exist.');
                     return this;
                 }
-                this.getNode(d1).connect(d2, edgeWeight);
             } else {
                 if (!this.hasNode(d1, true)) {
                     this.addNode(d1, null, true);
@@ -156,8 +167,14 @@ var Graph = (function (Node, Map) {
                 if (!this.hasNode(d2, true)) {
                     this.addNode(d2, null, true);
                 }
-                this.getNode(d1, true).connect(d2, edgeWeight, true);
             }
+            this.getNode(d1, asNode).connect(d2, edgeWeight, asNode);
+
+            // if this graph is undirected, add a reversed edge:
+            if(this._type == 0) {
+                this.getNode(d2, asNode).connect(d1, edgeWeight, asNode);
+            }
+
             return this;
         })
         .method('removeEdge', function (d1, d2, asNode) {
@@ -172,7 +189,6 @@ var Graph = (function (Node, Map) {
                 if (!this.hasNode(d2)) {
                     return this;
                 }
-                this.getNode(d1).disconnect(d2);
             } else {
                 if (!this.hasNode(d1, true)) {
                     throw new Error('Node ' + d1.toString() + ' does not exist.');
@@ -181,8 +197,14 @@ var Graph = (function (Node, Map) {
                 if (!this.hasNode(d2, true)) {
                     return this;
                 }
-                this.getNode(d1, true).disconnect(d2, true);
             }
+            this.getNode(d1, asNode).disconnect(d2, asNode);
+
+            // if this graph is undirected, remove the reversed edge:
+            if(this._type == 0) {
+                this.getNode(d2, asNode).disconnect(d1, asNode);
+            }
+
             return this;
         })
         .method('getNeighborsOfNode', function (id) {
@@ -215,3 +237,21 @@ var Graph = (function (Node, Map) {
             return this;
         });
 })(GraphNode, HashTable);
+
+
+(function () { // test
+
+    //return; // not execute tests
+
+    var g = new Graph();
+
+    for(var i = 0; i < 100; i++) {
+        g.addNode(i, i);
+    }
+    g.print();
+    for(var i = 0; i < 100; i++) {
+        g.addEdge(i, (i + 1) % 100);
+    }
+    g.print();
+})
+();
