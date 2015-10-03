@@ -168,11 +168,11 @@ var Matrix = (function () {
 
         if(arguments.length >= 2) {
             if(!this.sizeValid(size)) {
-                throw new Error('Wrong parameters. A size of matrix is needed');
+                throw new Error('Wrong format of the matrix size.');
                 return null;
             } else {
-                var vsize = parseInt(size[0]);
-                var hsize = parseInt(size[1]);
+                var vsize = parseInt(size[0]),
+                    hsize = parseInt(size[1]);
                 if(vsize < 0) vsize = -vsize;
                 if(hsize < 0) hsize = -hsize;
                 arrOrValue = (arrOrValue == null ? 0 : arrOrValue);
@@ -291,7 +291,7 @@ var Matrix = (function () {
             }
             return this;
         })
-        .mathod('eachCol', function (callback) {
+        .method('eachCol', function (callback) {
             for(var i = 0, len = this.hsize(); i < len; i++) {
                 callback(this.col(i));
             }
@@ -337,7 +337,7 @@ var Matrix = (function () {
                 return this;
             }
 
-            var newMat = [],
+            var arrArr = [],
                 rend = (rlength == -1 ? this.vsize() : (rbegin + rlength)),
                 cend = (clength == -1 ? this.hsize() : (cbegin + clength));
             for(var i = rbegin; i < rend; i++) {
@@ -346,9 +346,9 @@ var Matrix = (function () {
                 for(var j = cbegin; j < cend; j++) {
                     newRow.push(curRow[j]);
                 }
-                newMat.push(newRow);
+                arrArr.push(newRow);
             }
-            return new Matrix(newMat);
+            return new Matrix(arrArr);
         })
         .method('sizeEqual', function (mat) {
             // check arguments:
@@ -364,40 +364,81 @@ var Matrix = (function () {
                     throw new Error('The parameter should be a Number or Matrix.');
                     return null;
                 } else {
-                    var newMat = [];
+                    var arrArr = [];
                     for(var i = 0, vlen = this.vsize(); i < vlen; i++) {
                         var curRow = this._data[i],
                             newRow = [];
                         for(var j = 0, hlen = this.hsize(); j < hlen; j++) {
                             newRow.push(adder ? adder(curRow[j], mat) : (curRow[j] + mat));
                         }
-                        newMat.push(newRow);
+                        arrArr.push(newRow);
                     }
-                    return new Matrix(newMat);
+                    return new Matrix(arrArr);
                 }
             }
             if(!this.sizeEqual(mat)) {
                 throw new Error('Different sizes.');
                 return null;
             }
-            var newMat = [];
+            var arrArr = [];
             for(var i = 0, vlen = this.vsize(); i < vlen; i++) {
                 var curRow = this._data[i],
                     newRow = [];
                 for(var j = 0, hlen = this.hsize(); j < hlen; j++) {
                     newRow.push(adder ? adder(curRow[j], mat.get(i, j)) : (curRow[j] + mat.get(i, j)));
                 }
-                newMat.push(newRow);
+                arrArr.push(newRow);
             }
-            return new Matrix(newMat);
+            return new Matrix(arrArr);
         })
+        .method('transpose', function () {})
         .method('multiply', function () {})
         .method('power', function () {})
         .method('sqrt', function () {})
-        .method('init', function (val, size) {})
-        .method('zeros', function (size) {})
-        .method('ones', function (size) {})
-        .method('eye', function (size) {})
+        .method('init', function (val, size) {
+            if(arguments.length == 0) {
+                throw new Error('A size is needed.');
+                return null;
+            }
+            if(!Matrix.prototype.sizeValid(size)) {
+                throw new Error('Wrong format of the matrix size.');
+                return null;
+            }
+            var arrArr = new Array(size[0]);
+            for(var i = 0; i < size[0]; i++) {
+                var newRow = new Array(size[1]);
+                for(var j = 0; j < size[1]; j++) {
+                    newRow[j] = val;
+                }
+                arrArr[i] = newRow;
+            }
+            return new Matrix(arrArr);
+        })
+        .method('zeros', function (size) {
+            return Matrix.prototype.init(0, size);
+        })
+        .method('ones', function (size) {
+            return Matrix.prototype.init(1, size);
+        })
+        .method('eye', function (size) {
+            if(arguments.length == 0) {
+                throw new Error('A size is needed.');
+                return null;
+            }
+            if(!Matrix.prototype.sizeValid(size)) {
+                throw new Error('Wrong format of the matrix size.');
+                return null;
+            }
+            var arrArr = new Array(size[0]);
+            for(var i = 0; i < size[0]; i++) {
+                var newRow = new Array(size[1]);
+                for(var j = 0; j < size[1]; j++) {
+                    newRow[j] = (i == j ? 1 : 0);
+                }
+                arrArr[i] = newRow;
+            }
+            return new Matrix(arrArr);
+        })
     /**
      * calculate the determinant
      */
@@ -405,4 +446,49 @@ var Matrix = (function () {
         .method('format', function () {})
         .method('toString', function () {})
         .method('print', function () {})
+})();
+
+var RationalNumber = (function () {
+    "use strict";
+    return function (p, q) {
+        // notice: a rational number is any number that can be expressed as the quotient
+        // or fraction p/q of two integers, p and q, with the denominator q not equal to zero.
+
+        // check arguments:
+        // todo
+
+        this.p = parseInt(p);
+        this.q = parseInt(q);
+        var t = RationalNumber.prototype.gcd(this.p, this.q);
+        this.p = Math.round(this.p / t);
+        this.q = Math.round(this.q / t);
+    }
+        .method('gcd', function (a, b) {
+            if (a < b) {
+                var c = a;
+                a = b;
+                b = c;
+            }
+            var r = a % b;
+            while (r != 0) {
+                a = b;
+                b = r;
+                r = a % b;
+            }
+            return b;
+        });
+})();
+
+var ComplexNumber = (function () {
+    "use strict";
+    return function (a, b) {
+        // notice: a is the real part and b is the imaginary part of the complex number.
+        // thus, this is a + bi.
+
+        // check arguments:
+        // todo
+
+        this.a = parseFloat(a);
+        this.b = parseFloat(b);
+    };
 })();
