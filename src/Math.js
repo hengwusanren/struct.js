@@ -5,11 +5,24 @@
 var Vector = (function () {
     "use strict";
 
-    return function (arr) {
+    return function (arrOrValue, size) {
         // check arguments:
         // todo
 
-        this._data = (arguments.length > 0 && Array.isArray(arr)) ? arr : [];
+        if(arguments.length >= 2) {
+            if(isNaN(parseInt(size))) {
+                throw new Error('Wrong parameters. A size of array is needed');
+                return null;
+            } else {
+                size = parseInt(size);
+                if(size < 0) size = -size;
+                arrOrValue = (arrOrValue == null ? 0 : arrOrValue);
+                this._data = new Array(size);
+                for(var i = 0; i < size; i++) this._data[i] = arrOrValue;
+            }
+        } else if(arguments.length == 1 && Array.isArray(arrOrValue)) {
+            this._data = arrOrValue;
+        } else this._data = [];
     }
         .method('front', function () {
             if(this.isEmpty()) return null;
@@ -149,47 +162,235 @@ var Vector = (function () {
 var Matrix = (function () {
     "use strict";
 
-    return function () {
+    return function (arrOrValue, size) {
         // check arguments:
         // todo
 
-        this._data = [];
+        if(arguments.length >= 2) {
+            if(!this.sizeValid(size)) {
+                throw new Error('Wrong parameters. A size of matrix is needed');
+                return null;
+            } else {
+                var vsize = parseInt(size[0]);
+                var hsize = parseInt(size[1]);
+                if(vsize < 0) vsize = -vsize;
+                if(hsize < 0) hsize = -hsize;
+                arrOrValue = (arrOrValue == null ? 0 : arrOrValue);
+                this._data = new Array(vsize);
+                for(var i = 0; i < vsize; i++) {
+                    this._data[i] = new Array(hsize);
+                    for(var j = 0; j < hsize; j++) {
+                        this._data[i][j] = arrOrValue;
+                    }
+                }
+            }
+        } else if(arguments.length == 1 && Array.isArray(arrOrValue)
+            && (function () {
+                for(var i = 0, len = arrOrValue.length; i < len; i++) {
+                    if(!Array.isArray(arrOrValue[i])) return false;
+                }
+                return true;
+            })()) {
+            this._data = arrOrValue;
+        } else this._data = [[]];
     }
+        .method('sizeValid', function (size) {
+            return Array.isArray(size) && size.length === 2
+                && !isNaN(parseInt(size[0])) && !isNaN(parseInt(size[1]));
+        })
+        .method('vsize', function () {
+            return this._data.length;
+        })
+        .method('hsize', function () {
+            return this.vsize() == 0 ? 0 : this._data[0].length;
+        })
+        .method('row', function (rowIndex) {
+            if(this.vsize() == 0) return null;
+            return new Vector(this._data[rowIndex]);
+        })
+        .method('col', function (colIndex) {
+            if(this.hsize() == 0) return null;
+            var curCol = new Array(this.vsize());
+            for(var ri = 0, rnum = this.vsize(); ri < rnum; ri++) {
+                curCol[ri] = this._data[ri][colIndex];
+            }
+            return new Vector(curCol);
+        })
+        .method('get', function (rowIndex, colIndex) {
+            return this._data[rowIndex][colIndex];
+        })
         .method('frontRow', function () {
-            // todo
+            if(this.vsize() == 0) return null;
+            return this.row(0);
         })
         .method('backRow', function () {
-            // todo
+            if(this.vsize() == 0) return null;
+            return this.row(this.vsize() - 1);
         })
         .method('frontCol', function () {
-            // todo
+            if(this.hsize() == 0) return null;
+            return this.col(0);
         })
         .method('backCol', function () {
-            // todo
+            if(this.hsize() == 0) return null;
+            return this.col(this.hsize() - 1);
         })
         .method('size', function () {
-            return [this._data.length, this._data.length == 0 ? 0 : this._data[0].length];
+            return [this.vsize(), this.hsize()];
         })
         .method('isEmpty', function () {
-            // todo
+            return this.hsize() == 0;
         })
-        .method('push', function (v) {
-            // todo
+        .method('push pushRow', function (arr) {
+            if(!Array.isArray(arr) || arr.length !== this.hsize()) {
+                throw new Error('Wrong row to add.');
+                return this;
+            }
+            this._data.push(arr);
         })
-        .method('rpush', function (v) {
-            // todo
+        .method('rpush rpushRow', function (arr) {
+            if(!Array.isArray(arr) || arr.length !== this.hsize()) {
+                throw new Error('Wrong row to add.');
+                return this;
+            }
+            this._data.unshift(arr);
         })
-        .method('pop', function () {
-            // todo
+        .method('pop popRow', function (n) {
+            if(arguments.length == 0) var n = 1;
+            while(n > 0) {
+                this._data.pop();
+                n--;
+            }
+            return this;
         })
-        .method('rpop', function () {
-            // todo
+        .method('rpop rpopRow', function (n) {
+            if(arguments.length == 0) var n = 1;
+            while(n > 0) {
+                this._data.shift();
+                n--;
+            }
+            return this;
+        })
+        .method('pushCol', function (arr) {
+            if(!Array.isArray(arr) || arr.length !== this.hsize()) {
+                throw new Error('Wrong row to add.');
+                return this;
+            }
+            this._data.push(arr);
+        })
+        .method('rpushCol', function (arr) {
+            if(!Array.isArray(arr) || arr.length !== this.hsize()) {
+                throw new Error('Wrong row to add.');
+                return this;
+            }
+            this._data.unshift(arr);
+        })
+        .method('eachRow', function (callback) {
+            for(var i = 0, len = this.vsize(); i < len; i++) {
+                callback(this.row(i));
+            }
+            return this;
+        })
+        .mathod('eachCol', function (callback) {
+            for(var i = 0, len = this.hsize(); i < len; i++) {
+                callback(this.col(i));
+            }
+            return this;
+        })
+        .method('popCol', function (n) {
+            if(arguments.length == 0) var n = 1;
+            while(n > 0) {
+                this.eachRow(function (r) {
+                    Vector.prototype.pop.call(r);
+                });
+                n--;
+            }
+            return this;
+        })
+        .method('rpopCol', function (n) {
+            if(arguments.length == 0) var n = 1;
+            while(n > 0) {
+                this.eachRow(function (r) {
+                    Vector.prototype.rpop.call(r);
+                });
+                n--;
+            }
+            return this;
         })
         .method('each', function (callback) {
-            // todo
+            this.eachRow(function (r) {
+                Vector.prototype.each.call(r, callback);
+            });
+            return this;
         })
-        .method('subset', function () {})
-        .method('add', function () {})
+        .method('subset', function (rbegin, rlength, cbegin, clength) {
+            // check arguments:
+            // todo
+
+            if(rbegin < 0 || (rlength <= 0 && rlength !== -1)
+                || (rlength !== -1 && rbegin + rlength > this.vsize())
+                || (rlength === -1 && rbegin >= this.vsize())
+                || cbegin < 0 || (clength <= 0 && clength !== -1)
+                || (clength !== -1 && cbegin + clength > this.hsize())
+                || (clength === -1 && cbegin >= this.hsize())) {
+                throw new Error('Wrong range.')
+                return this;
+            }
+
+            var newMat = [],
+                rend = (rlength == -1 ? this.vsize() : (rbegin + rlength)),
+                cend = (clength == -1 ? this.hsize() : (cbegin + clength));
+            for(var i = rbegin; i < rend; i++) {
+                var curRow = this._data[i],
+                    newRow = [];
+                for(var j = cbegin; j < cend; j++) {
+                    newRow.push(curRow[j]);
+                }
+                newMat.push(newRow);
+            }
+            return new Matrix(newMat);
+        })
+        .method('sizeEqual', function (mat) {
+            // check arguments:
+            // todo
+
+            var size = this.size(),
+                size1 = Matrix.prototype.size.call(mat);
+            return (size1 && size1[0] === size[0] && size1[1] === size[1]);
+        })
+        .method('add', function (mat, adder) {
+            if(!(mat instanceof Matrix)) {
+                if(typeof mat !== 'number') {
+                    throw new Error('The parameter should be a Number or Matrix.');
+                    return null;
+                } else {
+                    var newMat = [];
+                    for(var i = 0, vlen = this.vsize(); i < vlen; i++) {
+                        var curRow = this._data[i],
+                            newRow = [];
+                        for(var j = 0, hlen = this.hsize(); j < hlen; j++) {
+                            newRow.push(adder ? adder(curRow[j], mat) : (curRow[j] + mat));
+                        }
+                        newMat.push(newRow);
+                    }
+                    return new Matrix(newMat);
+                }
+            }
+            if(!this.sizeEqual(mat)) {
+                throw new Error('Different sizes.');
+                return null;
+            }
+            var newMat = [];
+            for(var i = 0, vlen = this.vsize(); i < vlen; i++) {
+                var curRow = this._data[i],
+                    newRow = [];
+                for(var j = 0, hlen = this.hsize(); j < hlen; j++) {
+                    newRow.push(adder ? adder(curRow[j], mat.get(i, j)) : (curRow[j] + mat.get(i, j)));
+                }
+                newMat.push(newRow);
+            }
+            return new Matrix(newMat);
+        })
         .method('multiply', function () {})
         .method('power', function () {})
         .method('sqrt', function () {})
