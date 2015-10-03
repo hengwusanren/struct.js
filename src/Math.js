@@ -459,9 +459,15 @@ var RationalNumber = (function () {
 
         this.p = parseInt(p);
         this.q = parseInt(q);
-        var t = RationalNumber.prototype.gcd(this.p, this.q);
-        this.p = Math.round(this.p / t);
-        this.q = Math.round(this.q / t);
+        if(this.q < 0) {
+            this.q = -this.q;
+            this.p = -this.p;
+        }
+        if(this.q > 1) {
+            var t = RationalNumber.prototype.gcd(this.p, this.q);
+            this.p = Math.round(this.p / t);
+            this.q = Math.round(this.q / t);
+        }
     }
         .method('gcd', function (a, b) {
             if (a < b) {
@@ -476,6 +482,29 @@ var RationalNumber = (function () {
                 r = a % b;
             }
             return b;
+        })
+        .method('add', function (r) {
+            return new RationalNumber(this.p * r.q + this.q * r.p, this.q * r.q);
+        })
+        .method('subtract', function (r) {
+            return new RationalNumber(this.p * r.q - this.q * r.p, this.q * r.q);
+        })
+        .method('multiply', function (r) {
+            return new RationalNumber(this.p * r.p, this.q * r.q);
+        })
+        .method('divide', function (r) {
+            return new RationalNumber(this.p * r.q, this.q * r.p);
+        })
+        .method('reciprocal', function () {
+            return new RationalNumber(this.q, this.p);
+        })
+        .method('power', function (n) {})
+        .method('sqrt', function (n) {})
+        .method('toString', function () {
+            return this.p.toString() + '/' + this.q.toString();
+        })
+        .method('print', function () {
+            console.log(this.toString());
         });
 })();
 
@@ -490,5 +519,35 @@ var ComplexNumber = (function () {
 
         this.a = parseFloat(a);
         this.b = parseFloat(b);
-    };
+    }
+        .method('add', function (c) {
+            return new ComplexNumber(this.a + c.a, this.b + c.b);
+        })
+        .method('subtract', function (c) {
+            return new ComplexNumber(this.a - c.a, this.b - c.b);
+        })
+        .method('multiply', function (c) {
+            return new ComplexNumber(this.a * c.a - this.b * c.b, this.a * c.b + this.b * c.a);
+        })
+        .method('conjugate', function () {
+            return new ComplexNumber(this.a, -this.b);
+        })
+        .method('divide', function (c) {
+            var p = c.multiply(c.conjugate()).a,
+                q = this.multiply(c.conjugate());
+            return new ComplexNumber(q.a / p, q.b / p);
+        })
+        .method('reciprocal', function () {})
+        .method('power', function (n) {})
+        .method('sqrt', function (n) {})
+        .method('toString', function () {
+            return this.a.toString() + (this.b < 0
+                    ? (this.b.toString() + 'i')
+                    : (this.b == 0
+                    ? ''
+                    : ('+' + this.b.toString() + 'i')));
+        })
+        .method('print', function () {
+            console.log(this.toString());
+        });
 })();
