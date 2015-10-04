@@ -9,7 +9,6 @@ var Heap = (function () {
 
     "use strict";
 
-
     return function (arr, type) {
         // check arguments:
         // todo
@@ -20,9 +19,25 @@ var Heap = (function () {
 
         this._data = arr;
 
+        /**
+         * type of heap
+         * 0: min heap
+         * 1: max heap
+         */
         Object.defineProperty(this, "_type", {
             value: (type ? 1 : 0),
             writable: false
         });
-    };
+    }
+        .method('parent', function (n) {
+            return (n <= 0 ? -1 : (n - 1) / 2);
+        })
+        .method('lchild', function (n) {
+            if(n < 0) return 0;
+            return 2 * n + 1;
+        })
+        .method('rchild', function (n) {
+            if(n < 0) return 0;
+            return 2 * n + 2;
+        });
 })();
