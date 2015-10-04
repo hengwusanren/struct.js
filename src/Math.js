@@ -24,6 +24,9 @@ var Vector = (function () {
             this._data = arrOrValue;
         } else this._data = [];
     }
+        .method('data', function () {
+            return this._data;
+        })
         .method('front', function () {
             if(this.isEmpty()) return null;
             return this._data[0];
@@ -108,6 +111,11 @@ var Vector = (function () {
                 arr.push(adder ? adder(this._data[i], vec.get(i)) : (this._data[i] + vec.get(i)));
             }
             return new Vector(arr);
+        })
+        .method('subtract', function (vec) {
+            return this.add(vec, function (v1, v2) {
+                return v1 - v2;
+            });
         })
         .method('multiply', function (vec, multiplier) {
             if(!(vec instanceof Vector)) {
@@ -194,6 +202,9 @@ var Matrix = (function () {
             this._data = arrOrValue;
         } else this._data = [[]];
     }
+        .method('data', function () {
+            return this._data;
+        })
         .method('sizeValid', function (size) {
             return Array.isArray(size) && size.length === 2
                 && !isNaN(parseInt(size[0])) && !isNaN(parseInt(size[1]));
@@ -241,19 +252,27 @@ var Matrix = (function () {
         .method('isEmpty', function () {
             return this.hsize() == 0;
         })
-        .method('push pushRow', function (arr) {
-            if(!Array.isArray(arr) || arr.length !== this.hsize()) {
+        .method('push pushRow', function (arr, asVector) {
+            if(!asVector && !Array.isArray(arr) || arr.length !== this.hsize()) {
+                throw new Error('Wrong row to add.');
+                return this;
+            } else if(asVector && (!(arr instanceof Vector) || arr.size() !== this.hsize())) {
                 throw new Error('Wrong row to add.');
                 return this;
             }
-            this._data.push(arr);
+            this._data.push(asVector ? arr.data() : arr);
+            return this;
         })
-        .method('rpush rpushRow', function (arr) {
-            if(!Array.isArray(arr) || arr.length !== this.hsize()) {
+        .method('rpush rpushRow', function (arr, asVector) {
+            if(!asVector && !Array.isArray(arr) || arr.length !== this.hsize()) {
+                throw new Error('Wrong row to add.');
+                return this;
+            } else if(asVector && (!(arr instanceof Vector) || arr.size() !== this.hsize())) {
                 throw new Error('Wrong row to add.');
                 return this;
             }
-            this._data.unshift(arr);
+            this._data.unshift(asVector ? arr.data() : arr);
+            return this;
         })
         .method('pop popRow', function (n) {
             if(arguments.length == 0) var n = 1;
@@ -271,19 +290,31 @@ var Matrix = (function () {
             }
             return this;
         })
-        .method('pushCol', function (arr) {
-            if(!Array.isArray(arr) || arr.length !== this.hsize()) {
-                throw new Error('Wrong row to add.');
+        .method('pushCol', function (arr, asVector) {
+            if(!asVector && !Array.isArray(arr) || arr.length !== this.vsize()) {
+                throw new Error('Wrong column to add.');
+                return this;
+            } else if(asVector && (!(arr instanceof Vector) || arr.size() !== this.vsize())) {
+                throw new Error('Wrong column to add.');
                 return this;
             }
-            this._data.push(arr);
+            for(var i = 0, rnum = this.vsize(); i < rnum; i++) {
+                this._data[i].push(asVector ? arr.get(i) : arr[i]);
+            }
+            return this;
         })
-        .method('rpushCol', function (arr) {
-            if(!Array.isArray(arr) || arr.length !== this.hsize()) {
-                throw new Error('Wrong row to add.');
+        .method('rpushCol', function (arr, asVector) {
+            if(!asVector && !Array.isArray(arr) || arr.length !== this.vsize()) {
+                throw new Error('Wrong column to add.');
+                return this;
+            } else if(asVector && (!(arr instanceof Vector) || arr.size() !== this.vsize())) {
+                throw new Error('Wrong column to add.');
                 return this;
             }
-            this._data.unshift(arr);
+            for(var i = 0, rnum = this.vsize(); i < rnum; i++) {
+                this._data[i].unshift(asVector ? arr.get(i) : arr[i]);
+            }
+            return this;
         })
         .method('eachRow', function (callback) {
             for(var i = 0, len = this.vsize(); i < len; i++) {
@@ -358,6 +389,9 @@ var Matrix = (function () {
                 size1 = Matrix.prototype.size.call(mat);
             return (size1 && size1[0] === size[0] && size1[1] === size[1]);
         })
+        .method('isSquare', function () {
+            return this.vsize() === this.hsize();
+        })
         .method('add', function (mat, adder) {
             if(!(mat instanceof Matrix)) {
                 if(typeof mat !== 'number') {
@@ -391,8 +425,36 @@ var Matrix = (function () {
             }
             return new Matrix(arrArr);
         })
-        .method('transpose', function () {})
-        .method('multiply', function () {})
+        .method('subtract', function (mat) {
+            return this.add(mat, function (v1, v2) {
+                return v1 - v2;
+            });
+        })
+        .method('trans transpose', function () {})
+        .method('multiply', function (mat) {
+            // check arguments:
+            // todo
+
+            if(mat.vsize() !== this.hsize()) {
+                throw new Error('Wrong size.');
+                return this;
+            }
+            var newSize = [this.vsize(), mat.hsize()];
+            var arrArr = new Array(newSize[0]);
+            for(var i = 0; i < newSize[0]; i++) {
+                var newRow = new Array(newSize[1]),
+                    curRow = this._data[i];
+                for(var j = 0; j < newSize[1]; j++) {
+                    var sum = 0;
+                    for (var k = 0, hsize = this.hsize(); k < hsize; k++) {
+                        sum += curRow[k] * mat.get(k, j);
+                    }
+                    newRow[j] = sum;
+                }
+                arrArr[i] = newRow;
+            }
+            return new Matrix(arrArr);
+        })
         .method('power', function () {})
         .method('sqrt', function () {})
         .method('init', function (val, size) {
@@ -443,9 +505,18 @@ var Matrix = (function () {
      * calculate the determinant
      */
         .method('det', function () {})
+        .method('inv', function () {})
         .method('format', function () {})
-        .method('toString', function () {})
-        .method('print', function () {})
+        .method('toString', function () {
+            var ret = '(\n';
+            for(var i = 0, vsize = this.vsize(); i < vsize; i++) {
+                ret += this._data[i].toString() + '\n';
+            }
+            return ret + ')';
+        })
+        .method('print', function () {
+            console.log(this.toString());
+        })
 })();
 
 var RationalNumber = (function () {
@@ -456,6 +527,9 @@ var RationalNumber = (function () {
 
         // check arguments:
         // todo
+
+        if(arguments.length <= 1) var q = 1;
+        if(arguments.length == 0) var p = 0;
 
         this.p = parseInt(p);
         this.q = parseInt(q);
@@ -483,6 +557,12 @@ var RationalNumber = (function () {
             }
             return b;
         })
+        .method('isInfinite', function () {
+            return this.q === 0;
+        })
+        .method('isZero', function () {
+            return this.p === 0 && this.q != 0;
+        })
         .method('add', function (r) {
             return new RationalNumber(this.p * r.q + this.q * r.p, this.q * r.q);
         })
@@ -495,14 +575,23 @@ var RationalNumber = (function () {
         .method('divide', function (r) {
             return new RationalNumber(this.p * r.q, this.q * r.p);
         })
-        .method('reciprocal', function () {
+        .method('inv', function () {
             return new RationalNumber(this.q, this.p);
         })
-        .method('power', function (n) {})
-        .method('sqrt', function (n) {})
+        .method('power', function (n) {
+            return new RationalNumber(Math.pow(this.p, n), Math.pow(this.q, n));
+        })
+        .method('sqrt', function (n) {
+            return this.isInfinite() ? null : Math.sqrt(this.p / this.q);
+        })
         .method('toString', function () {
             return this.p.toString() + '/' + this.q.toString();
         })
+        .method('hashCode', function () {
+            return this.toString().hashCode();
+        })
+        .method('equals', function (r) {})
+        .method('comparator', function (r1, r2) {})
         .method('print', function () {
             console.log(this.toString());
         });
@@ -520,24 +609,57 @@ var ComplexNumber = (function () {
         this.a = parseFloat(a);
         this.b = parseFloat(b);
     }
+        .method('isZero', function () {
+            return this.a === 0 && this.b === 0;
+        })
+        .method('numberCheck', function (num) {
+            if(num == null) return null;
+            if(!(num instanceof ComplexNumber)) {
+                if(isNaN(parseFloat(num))) {
+                    throw new Error('Wrong number.');
+                    return null;
+                }
+                num = new ComplexNumber(parseFloat(num), 0);
+            }
+            return num;
+        })
+        .method('modSquare', function () {
+            return this.a * this.a + this.b * this.b;
+        })
         .method('add', function (c) {
+            c = ComplexNumber.prototype.numberCheck(c);
+            if(c == null) return null;
+
             return new ComplexNumber(this.a + c.a, this.b + c.b);
         })
         .method('subtract', function (c) {
+            c = ComplexNumber.prototype.numberCheck(c);
+            if(c == null) return null;
+
             return new ComplexNumber(this.a - c.a, this.b - c.b);
         })
         .method('multiply', function (c) {
+            c = ComplexNumber.prototype.numberCheck(c);
+            if(c == null) return null;
+
             return new ComplexNumber(this.a * c.a - this.b * c.b, this.a * c.b + this.b * c.a);
         })
         .method('conjugate', function () {
             return new ComplexNumber(this.a, -this.b);
         })
-        .method('divide', function (c) {
-            var p = c.multiply(c.conjugate()).a,
-                q = this.multiply(c.conjugate());
-            return new ComplexNumber(q.a / p, q.b / p);
+        .method('inv', function () {
+            if(this.isZero()) {
+                throw new Error('This is a Zero-ComplexNumber.');
+                return null;
+            }
+            return new ComplexNumber(this.a / modSquare, -this.b / modSquare);
         })
-        .method('reciprocal', function () {})
+        .method('divide', function (c) {
+            c = ComplexNumber.prototype.numberCheck(c);
+            if(c == null) return null;
+
+            return this.multiply(c.inv());
+        })
         .method('power', function (n) {})
         .method('sqrt', function (n) {})
         .method('toString', function () {
@@ -547,6 +669,11 @@ var ComplexNumber = (function () {
                     ? ''
                     : ('+' + this.b.toString() + 'i')));
         })
+        .method('hashCode', function () {
+            return this.toString().hashCode();
+        })
+        .method('equals', function (c) {})
+        .method('comparator', function (c1, c2) {})
         .method('print', function () {
             console.log(this.toString());
         });
