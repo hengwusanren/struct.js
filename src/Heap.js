@@ -29,10 +29,19 @@ var Heap = (function () {
             writable: false
         });
 
-        this.minBuild(arr);
+        this.build(arr);
     }
         .method('size', function () {
             return this._data.length;
+        })
+        .method('height', function () {
+            var size = this.size();
+            var height = 0;
+            while(size > 0) {
+                height++;
+                size = Math.floor(size / 2);
+            }
+            return height;
         })
         .method('parent', function (n) {
             return (n <= 0 ? -1 : Math.floor((n - 1) / 2));
@@ -58,6 +67,14 @@ var Heap = (function () {
                 Heap.prototype._swap(arr, i, j);
             }
         })
+        .method('_maxHeapFixUp', function (arr, index) { // while smaller than parent, swap with parent
+            for(var i = index,
+                    j = Heap.prototype.parent(i);
+                (j >= 0 && i != 0) && arr[i] < arr[j];
+                i = j, j = Heap.prototype.parent(i)) {
+                Heap.prototype._swap(arr, i, j);
+            }
+        })
         .method('_minHeapFixDown', function (arr, index, n) {
             for(var lchild = Heap.prototype.lchild(index),
                      rchild = Heap.prototype.rchild(index);
@@ -71,15 +88,35 @@ var Heap = (function () {
                 Heap.prototype._swap(arr, index, lchild);
             }
         })
-        .method('minPush', function (v) {
+        .method('_maxHeapFixDown', function (arr, index, n) {
+            for(var lchild = Heap.prototype.lchild(index),
+                    rchild = Heap.prototype.rchild(index);
+                lchild < n;
+                index = lchild, lchild = Heap.prototype.lchild(index), rchild = Heap.prototype.rchild(index)) {
+
+                if (rchild < n && arr[rchild] > arr[lchild]) lchild = rchild; // let lchild be the larger child
+
+                if (arr[lchild] <= arr[index]) break;
+
+                Heap.prototype._swap(arr, index, lchild);
+            }
+        })
+        .method('push', function (v) {
             this._data.push(v);
-            Heap.prototype._minHeapFixUp(this._data, this._data.length - 1);
+
+            if(this._type == 0) Heap.prototype._minHeapFixUp(this._data, this._data.length - 1);
+            else Heap.prototype._maxHeapFixUp(this._data, this._data.length - 1);
+
             return this;
         })
-        .method('minPop', function () {
+        .method('pop', function () {
             Heap.prototype._swap(this._data, 0, this._data.length - 1);
             this._data.pop();
-            Heap.prototype._minHeapFixDown(this._data, 0, this._data.length);
+
+            if(this._type == 0) Heap.prototype._minHeapFixDown(this._data, 0, this._data.length);
+            else Heap.prototype._maxHeapFixDown(this._data, 0, this._data.length);
+
+            return this;
         })
         .method('minHeapSort', function (arr, noNeedToBuild) {
             if(!noNeedToBuild) {
@@ -91,8 +128,20 @@ var Heap = (function () {
             }
             return arr;
         })
-        .method('minSort', function () { // descending
-            Heap.prototype.minHeapSort(this._data, true);
+        .method('maxHeapSort', function (arr, noNeedToBuild) {
+            if(!noNeedToBuild) {
+                Heap.prototype.maxHeapBuild(arr);
+            }
+            for(var i = arr.length - 1; i >= 1; i--) {
+                Heap.prototype._swap(arr, 0, i);
+                Heap.prototype._maxHeapFixDown(arr, 0, i);
+            }
+            return arr;
+        })
+        .method('sort', function () { // min-heap will be descending, max-heap will be ascending.
+            if(this._type == 0) Heap.prototype.minHeapSort(this._data, true);
+            else Heap.prototype.maxHeapSort(this._data, true);
+
             return this;
         })
         .method('minHeapBuild', function (arr) {
@@ -100,12 +149,20 @@ var Heap = (function () {
                 Heap.prototype._minHeapFixDown(arr, i, arr.length);
             }
         })
-        .method('minBuild', function (arr) {
+        .method('maxHeapBuild', function (arr) {
+            for(var i = arr.length / 2; i >= 0; i--) {
+                Heap.prototype._maxHeapFixDown(arr, i, arr.length);
+            }
+        })
+        .method('build', function (arr) {
             // check arguments:
             // todo
 
             this._data = arr.slice(0);
-            Heap.prototype.minHeapBuild(this._data);
+
+            if(this._type == 0) Heap.prototype.minHeapBuild(this._data);
+            else Heap.prototype.maxHeapBuild(this._data);
+
             return this;
         })
         .method('toString', function () {
@@ -128,14 +185,25 @@ var Heap = (function () {
     console.log(arr);
 
     console.log('Build min-heap: ');
-    var heap = new Heap(arr);
+    var heap = new Heap(arr, 0);
     heap.print();
 
     console.log('Sort min-heap: ');
-    heap.minSort();
+    heap.sort();
     heap.print();
 
-    console.log('Array after sort: ');
+    console.log('Build max-heap: ');
+    heap = new Heap(arr, 1);
+    heap.print();
+
+    console.log('Sort max-heap: ');
+    heap.sort();
+    heap.print();
+
+    console.log('Array after min-heap sort: ');
     console.log(Heap.prototype.minHeapSort(arr));
+
+    console.log('Array after max-heap sort: ');
+    console.log(Heap.prototype.maxHeapSort(arr));
 })
 ();
