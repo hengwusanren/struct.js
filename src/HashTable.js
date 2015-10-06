@@ -86,6 +86,7 @@ var HashTable = (function (Iter) {
             return this;
         })
         .method('_hasInLine', function (key, index) {
+            // check if there is an Entry with this key:
             // todo
 
             if(arguments.length < 2) {
@@ -95,13 +96,11 @@ var HashTable = (function (Iter) {
             // todo
         })
         .method('has contains', function (key) {
-            // check arguments:
-            // todo
-
             var index = this.indexOf(key);
             return this._hasInLine(key, index);
         })
         .method('_getInLine', function (key, index) {
+            // get the Entry with this key in some line:
             // todo
 
             if(arguments.length < 2) {
@@ -111,13 +110,11 @@ var HashTable = (function (Iter) {
             // todo
         })
         .method('get', function (key) {
-            // check arguments:
-            // todo
-
             var index = this.indexOf(key);
             return this._getInLine(key, index);
         })
         .method('_putInLine', function (key, value, index) {
+            // put an Entry into some line:
             // todo
 
             if(arguments.length < 3) {
@@ -127,13 +124,11 @@ var HashTable = (function (Iter) {
             // todo
         })
         .method('put', function (key, value) {
-            // check arguments:
-            // todo
-
             var index = this.indexOf(key);
             return this._putInLine(key, value, index);
         })
         .method('_removeInLine', function (key, index) {
+            // find and remove the Entry with this key:
             // todo
 
             if(arguments.length < 2) {
@@ -145,9 +140,6 @@ var HashTable = (function (Iter) {
             return true;
         })
         .method('remove', function (key) {
-            // check arguments:
-            // todo
-
             var index = this.indexOf(key);
             return this._removeInLine(key, index);
         })
