@@ -11,14 +11,19 @@ var HashTable = (function (Iter) {
 
     if (!Iter) return null;
 
-    return function (size, loadFactor) {
+    return function (getHashOf, size, loadFactor) {
         // check arguments:
         // todo
 
         this._table = {};
         this._size = 0;
-
-        //this._valueComparator = function (v1, v2) { return v1 == v2 };
+        var initCapacity = arguments.length > 1 ? size : 16;
+        Object.defineProperty(this, '_initialCapacity', {
+            value: initCapacity,
+            writable: false
+        });
+        this._capacity = this._initialCapacity;
+        this._loadFactor = arguments.length > 2 ? loadFactor : 0.75;
 
         this.implements(Iter, [
             function (key) {
@@ -29,6 +34,33 @@ var HashTable = (function (Iter) {
             null,
             null
         ]);
+
+        this._hashOf = null;
+        if(getHashOf && (typeof getHashOf === 'function')) {
+            this._hashOf = getHashOf;
+        } else {
+            this._hashOf = function (key) {
+                if(key === null || key === undefined) return null;
+                if(key.hashCode) return key.hashCode();
+                if(key.id && (typeof key.id === 'function')) {
+                    var id = key.id();
+                    if(typeof id === 'number') return id;
+                    return id.toString().hashCode();
+                }
+                var typeOfKey = (typeof key);
+                if(typeOfKey === 'number' && Math.round(key) === key) return key;
+                if(typeOfKey === 'boolean') return (key ? 1 : 0);
+                if(typeOfKey === 'number'
+                    || typeOfKey === 'string'
+                    || typeOfKey === 'function') {
+                    return key.toString().hashCode();
+                }
+                return JSON.stringify(key).hashCode();
+            };
+        }
+        this.indexOf = function (h, asKey) {
+            return (asKey ? this._hashOf(h) : h) & (this._capacity - 1);
+        };
     }
         .implements()
         .method('data', function () {
@@ -37,95 +69,87 @@ var HashTable = (function (Iter) {
         .method('size', function () {
             return this._size;
         })
+        .method('capacity', function () {
+            return this._capacity;
+        })
+        .method('checkThreshold', function () {
+            return this.size() > this.capacity() * this._loadFactor;
+        })
+        .method('resize', function () {
+            // rehash:
+            // todo
+        })
         .method('clear', function () {
             this._table = new Object();
             this._size = 0;
+            this._capacity = this._initialCapacity;
             return this;
         })
-        .method('_hasInLine', function (realKey, hashKey) {
+        .method('_hasInLine', function (key, index) {
             // todo
 
             if(arguments.length < 2) {
-                if(!realKey.hashCode) {
-                    throw new Error('The type of key should implement hashCode method.');
-                    return false;
-                }
-                var hashKey = realKey.hashCode();
+                var index = this.indexOf(key);
             }
 
             // todo
         })
-        .method('has contains', function (realKey) {
+        .method('has contains', function (key) {
             // check arguments:
             // todo
 
-            // todo
+            var index = this.indexOf(key);
+            return this._hasInLine(key, index);
         })
-        .method('_getInLine', function (realKey, hashKey) {
+        .method('_getInLine', function (key, index) {
             // todo
 
             if(arguments.length < 2) {
-                if(!realKey.hashCode) {
-                    throw new Error('The type of key should implement hashCode method.');
-                    return false;
-                }
-                var hashKey = realKey.hashCode();
+                var index = this.indexOf(key);
             }
 
             // todo
         })
-        .method('get', function (realKey) {
+        .method('get', function (key) {
             // check arguments:
             // todo
 
-            // todo
+            var index = this.indexOf(key);
+            return this._getInLine(key, index);
         })
-        .method('_putInLine', function (realKey, value, hashKey) {
+        .method('_putInLine', function (key, value, index) {
             // todo
 
             if(arguments.length < 3) {
-                if(!realKey.hashCode) {
-                    throw new Error('The type of key should implement hashCode method.');
-                    return false;
-                }
-                var hashKey = realKey.hashCode();
+                var index = this.indexOf(key);
             }
 
             // todo
         })
-        .method('put', function (realKey, value) {
+        .method('put', function (key, value) {
             // check arguments:
             // todo
 
-            if (!this.has(realKey)) this._size++;
-
-            // todo
-
-            return this;
+            var index = this.indexOf(key);
+            return this._putInLine(key, value, index);
         })
-        .method('_removeInLine', function (realKey, hashKey) {
+        .method('_removeInLine', function (key, index) {
             // todo
 
             if(arguments.length < 2) {
-                if(!realKey.hashCode) {
-                    throw new Error('The type of key should implement hashCode method.');
-                    return false;
-                }
-                var hashKey = realKey.hashCode();
+                var index = this.indexOf(key);
             }
 
             // todo
 
             return true;
         })
-        .method('remove', function (realKey) {
+        .method('remove', function (key) {
             // check arguments:
             // todo
 
-            if (this.has(realKey) && this._removeInLine(realKey)) {
-                this._size--;
-            }
-            return this;
+            var index = this.indexOf(key);
+            return this._removeInLine(key, index);
         })
         .method('hasValue', function (value, comparator) {
             // check arguments:
@@ -134,8 +158,8 @@ var HashTable = (function (Iter) {
             if(!comparator) {
                 var comparator = function (v1, v2) { return v1 == v2 };
             }
-            for (var hashKey in this._table) {
-                if(!this._table.hasOwnProperty(hashKey)) continue;
+            for (var i in this._table) {
+                if(!this._table.hasOwnProperty(i)) continue;
                 // todo
             }
             return false;
@@ -147,8 +171,8 @@ var HashTable = (function (Iter) {
             if(!comparator) {
                 var comparator = function (v1, v2) { return v1 == v2 };
             }
-            for (var hashKey in this._table) {
-                if(!this._table.hasOwnProperty(hashKey)) continue;
+            for (var i in this._table) {
+                if(!this._table.hasOwnProperty(i)) continue;
                 // todo
             }
             return null;
@@ -160,16 +184,16 @@ var HashTable = (function (Iter) {
             var keys = new Array();
 
             if(arguments.length == 0) {
-                for (var hashKey in this._table) {
-                    if(!this._table.hasOwnProperty(hashKey)) continue;
+                for (var i in this._table) {
+                    if(!this._table.hasOwnProperty(i)) continue;
                     // todo
                 }
             } else {
                 if(!comparator) {
                     var comparator = function (v1, v2) { return v1 == v2 };
                 }
-                for (var hashKey in this._table) {
-                    if(!this._table.hasOwnProperty(hashKey)) continue;
+                for (var i in this._table) {
+                    if(!this._table.hasOwnProperty(i)) continue;
                     // todo
                 }
             }
@@ -190,15 +214,15 @@ var HashTable = (function (Iter) {
         .method('toString', function () {
             var str = "{";
             if ((function(obj){
-                    for (var k in obj) {
-                        if(!obj.hasOwnProperty(k)) continue;
+                    for (var i in obj) {
+                        if(!obj.hasOwnProperty(i)) continue;
                         return true;
                     }
                     return false;
                 })(this._table)) {
                 str += "\n";
-                for (var hashKey in this._table) {
-                    if(!this._table.hasOwnProperty(hashKey)) continue;
+                for (var i in this._table) {
+                    if(!this._table.hasOwnProperty(i)) continue;
 
                     // todo
 
