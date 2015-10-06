@@ -18,6 +18,12 @@ var Queue = (function (SuperDLinkedList) {
         SuperDLinkedList.apply(this, arguments);
     }
         .inherits(SuperDLinkedList)
+        .method('pop', function () {
+            return SuperDLinkedList.prototype.rpop.call(this);
+        })
+        .method('rpop', function () {
+            return SuperDLinkedList.prototype.pop.call(this);
+        })
         .method('popUntil', function (value, comparator) {
             // check arguments:
             // todo

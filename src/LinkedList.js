@@ -143,7 +143,7 @@ var LinkedList = (function (SuperList, Node, Iter) {
             // todo
 
             if (!comparator) {
-                comparator = function (v1, v2) { return v1 == v2; };
+                var comparator = function (v1, v2) { return v1 == v2; };
             }
             if (listArr.length <= 1) return true;
             var p, q;
