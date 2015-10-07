@@ -5,9 +5,11 @@
 /********************************
  * Heap
  ********************************/
-var Heap = (function () {
+var Heap = (function (Compor) {
 
     "use strict";
+
+    if (!Compor) return null;
 
     return function (arr, type, comparator) {
         // check arguments:
@@ -30,19 +32,15 @@ var Heap = (function () {
         });
 
         if (!comparator) {
-            this.comparator = (this._type == 0 ?
+            var comparator = (this._type == 0 ?
                 (function (v1, v2) { return v1 < v2; }) :
                 (function (v1, v2) { return v1 > v2; }));
-        } else {
-            this.setComparator(comparator);
         }
+        this.implements(Compor, [comparator]);
 
         this.build(arr);
     }
-        .method('setComparator', function (comparator) {
-            this.comparator = comparator;
-            return this;
-        })
+        .implements()
         .method('isEmpty', function () {
             return this._data.length === 0;
         })
@@ -77,7 +75,7 @@ var Heap = (function () {
         .method('_heapFixUp', function (arr, index, comparator) { // while larger/smaller than parent, swap with parent
             for(var i = index,
                     j = Heap.prototype.parent(i);
-                (j >= 0 && i != 0) && comparator(arr[j], arr[i]);
+                (j >= 0 && i != 0) && comparator(arr[j], arr[i]) === 1;
                 i = j, j = Heap.prototype.parent(i)) {
                 Heap.prototype._swap(arr, i, j);
             }
@@ -88,9 +86,9 @@ var Heap = (function () {
                  lchild < n;
                  index = lchild, lchild = Heap.prototype.lchild(index), rchild = Heap.prototype.rchild(index)) {
 
-                if (rchild < n && comparator(arr[rchild], arr[lchild])) lchild = rchild; // let lchild be the smaller child
+                if (rchild < n && comparator(arr[rchild], arr[lchild]) === 1) lchild = rchild; // let lchild be the smaller child
 
-                if (!comparator(arr[lchild], arr[index])) break;
+                if (comparator(arr[lchild], arr[index]) !== 1) break;
 
                 Heap.prototype._swap(arr, index, lchild);
             }
@@ -118,8 +116,8 @@ var Heap = (function () {
             if(!type) var type = 0; // min-heap
             if (!comparator) {
                 var comparator = (type == 0 ?
-                    (function (v1, v2) { return v1 < v2; }) :
-                    (function (v1, v2) { return v1 > v2; }));
+                    (function (v1, v2) { return (v1 < v2 ? 1 : (v1 > v2 ? -1 : 0)); }) :
+                    (function (v1, v2) { return (v1 > v2 ? 1 : (v1 < v2 ? -1 : 0)); }));
             }
             if(!noNeedToBuild) {
                 Heap.prototype.heapBuild(arr, type, comparator);
@@ -139,8 +137,8 @@ var Heap = (function () {
             if(!type) var type = 0; // min-heap
             if (!comparator) {
                 var comparator = (type == 0 ?
-                    (function (v1, v2) { return v1 < v2; }) :
-                    (function (v1, v2) { return v1 > v2; }));
+                    (function (v1, v2) { return (v1 < v2 ? 1 : (v1 > v2 ? -1 : 0)); }) :
+                    (function (v1, v2) { return (v1 > v2 ? 1 : (v1 < v2 ? -1 : 0)); }));
             }
             for(var i = arr.length / 2; i >= 0; i--) {
                 Heap.prototype._heapFixDown(arr, i, arr.length, comparator);
@@ -162,7 +160,7 @@ var Heap = (function () {
         .method('print', function () {
             console.log(this.toString());
         });
-})();
+})(Comparator);
 
 
 (function () { // test
@@ -176,7 +174,9 @@ var Heap = (function () {
     console.log(arr);
 
     console.log('Build min-heap: ');
-    var heap = new Heap(arr, 0);
+    var heap = new Heap(arr, 0, function (v1, v2) {
+        return (v1%10) < (v2%10);
+    });
     heap.print();
 
     console.log('Sort min-heap: ');
@@ -184,7 +184,7 @@ var Heap = (function () {
     heap.print();
 
     console.log('Build max-heap: ');
-    heap = new Heap(arr, 1);
+    heap = new Heap(arr, 1, function (v1, v2) { return v1 > v2; });
     heap.print();
 
     console.log('Sort max-heap: ');

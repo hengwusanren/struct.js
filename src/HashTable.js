@@ -4,6 +4,7 @@
 
 /********************************
  * HashTable
+ * Table[indexOf(hashOf(key))] contains Entry {key,value,next}
  ********************************/
 var HashTable = (function (Iter) {
 

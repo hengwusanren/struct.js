@@ -4,6 +4,8 @@
 
 /********************************
  * SingleTable
+ * Table[key] -> value
+ * key must be String
  ********************************/
 var SingleTable = (function (Iter) {
 
