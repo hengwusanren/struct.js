@@ -49,6 +49,35 @@ var BinaryTreeNode = (function () {
                 root: p,
                 depth: h
             };
+        })
+    /**
+     * height of the tree with this root node
+     * if unbalanced, height is negative.
+     */
+        .method('height', function () {
+            if(this.lchild == null) {
+                if(this.rchild == null) return 1;
+                var rh = this.rchild.height();
+                if(rh > 1) return -1-rh;
+                if(rh > -1) return 1+rh;
+                return -1+rh;
+            } else {
+                var lh = this.lchild.height(),
+                    rh = 0;
+                if(this.rchild != null) rh = this.rchild.height();
+                if(lh < 0 || rh < 0) {
+                    lh = Math.abs(lh);
+                    rh = Math.abs(rh);
+                    return -1-(lh > rh ? lh : rh);
+                }
+                var max = (lh > rh ? lh : rh);
+                if(lh > rh + 1 || rh > lh + 1) return -1-max;
+                else return 1+max;
+            }
+            return 1;
+        })
+        .method('isBalanced', function () {
+            return this.height() >= 0;
         });
 })();
 
@@ -85,10 +114,68 @@ var BSTree = (function (SuperTree, Node, Compor) {
             // todo
         })
         .method('maximum', function () {
-            // todo
+            var p = this.root;
+            if(p == null) return null;
+            while(true) {
+                if(p.rchild != null) {
+                    p = p.rchild;
+                    continue;
+                }
+                if(p.lchild != null) {
+                    p = p.lchild;
+                    continue;
+                }
+                break;
+            }
+            return p.value;
+        })
+        .method('rheight', function () {
+            var p = this.root,
+                h = 0;
+            if(p == null) return h;
+            while(true) {
+                h++;
+                if(p.rchild == null) {
+                    break;
+                }
+                p = p.rchild;
+            }
+            return h;
         })
         .method('minimum', function () {
-            // todo
+            var p = this.root;
+            if(p == null) return null;
+            while(true) {
+                if(p.lchild != null) {
+                    p = p.lchild;
+                    continue;
+                }
+                if(p.rchild != null) {
+                    p = p.rchild;
+                    continue;
+                }
+                break;
+            }
+            return p.value;
+        })
+        .method('lheight', function () {
+            var p = this.root,
+                h = 0;
+            if(p == null) return h;
+            while(true) {
+                h++;
+                if(p.lchild == null) {
+                    break;
+                }
+                p = p.lchild;
+            }
+            return h;
+        })
+        .method('isBalanced', function () {
+            return this.root.isBalanced();
+        })
+        .method('isComplete', function () {
+            return this.lheight() === this.rheight();
         })
         .method('predecessorOf', function (node) {
             // todo

@@ -267,13 +267,13 @@ var Graph = (function (Node, Map) {
         .method('print', function () {
             console.log(this.toString());
         })
-        .method('dfs', function (start, visit, ifTrace, ifAll, stateStorage) {
+        .method('dfs', function (start, visitor, ifTrace, ifAll, stateStorage) {
             // check arguments:
             // todo
 
             return this;
         })
-        .method('bfs', function (start, visit, ifTrace, ifAll, stateStorage) {
+        .method('bfs', function (start, visitor, ifTrace, ifAll, stateStorage) {
             // check arguments:
             // todo
 

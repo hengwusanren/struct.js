@@ -57,5 +57,20 @@ var Tree = (function (Node) {
     }
         .method('newNode', function () {
             return Construct(this._nodeType, true, arguments);
+        })
+        .method('bfs', function (visitor) {
+            if(this.root == null) return false;
+            var q = new Queue();
+            q.push(this.root);
+            while(!q.isEmpty()) {
+                var t = q.top();
+                visitor(t);
+                for(var key in t.children) {
+                    if(!t.children.hasOwnProperty(key)) continue;
+                    q.push(t.children[key]);
+                }
+                q.pop();
+            }
+            return this;
         });
 })(TreeNode);
