@@ -36,6 +36,11 @@ var BinaryTreeNode = (function () {
             this.rchild.parent = null;
             this.rchild = null;
         })
+        .method('removeChild', function (node) {
+            if(node === this.lchild) return this.removeLeft();
+            if(node === this.rchild) return this.removeRight();
+            return null;
+        })
         .method('follow', function (node) {
             this.parent = node;
         })
@@ -78,6 +83,18 @@ var BinaryTreeNode = (function () {
         })
         .method('isBalanced', function () {
             return this.height() >= 0;
+        })
+        .method('isLeaf', function () {
+            return this.lchild == null && this.rchild == null;
+        })
+        .method('isFull', function () {
+            return this.lchild != null && this.rchild != null;
+        })
+        .method('position', function () {
+            var node = this;
+            if(node.parent == null) return 0;
+            if(node.parent.lchild === node) return -1;
+            if(node.parent.rchild === node) return 1;
         });
 })();
 
@@ -110,24 +127,35 @@ var BSTree = (function (SuperTree, Node, Compor) {
     }
         .inherits(SuperTree)
         .implements()
-        .method('find search', function (node, value, comparator) {
-            // todo
-        })
-        .method('maximum', function () {
-            var p = this.root;
-            if(p == null) return null;
-            while(true) {
-                if(p.rchild != null) {
-                    p = p.rchild;
-                    continue;
-                }
-                if(p.lchild != null) {
-                    p = p.lchild;
-                    continue;
-                }
-                break;
+        .method('findFrom searchFrom', function (node, value, comparator) {
+            if(!comparator) {
+                var comparator = function (v1, v2) {
+                    return v1 == v2 ? 0 : (v1 > v2 ? 1 : -1);
+                };
             }
-            return p.value;
+            var r = comparator(node.value, value);
+            if(r === 0) return {
+                node: node,
+                pos: 0
+            };
+            if(r === 1) {
+                if(node.lchild == null) return {
+                    node: node,
+                    pos: -1
+                };
+                return BSTree.prototype.findFrom(node.lchild, value, comparator);
+            }
+            if(r === -1) {
+                if(node.rchild == null) return {
+                    node: node,
+                    pos: 1
+                };
+                return BSTree.prototype.findFrom(node.rchild, value, comparator);
+            }
+        })
+        .method('find search', function (value, comparator) {
+            if(!comparator) var comparator = this.comparator;
+            return BSTree.prototype.findFrom(this.root, value, comparator);
         })
         .method('rheight', function () {
             var p = this.root,
@@ -142,8 +170,40 @@ var BSTree = (function (SuperTree, Node, Compor) {
             }
             return h;
         })
-        .method('minimum', function () {
-            var p = this.root;
+        .method('lheight', function () {
+            var p = this.root,
+                h = 0;
+            if(p == null) return h;
+            while(true) {
+                h++;
+                if(p.lchild == null) {
+                    break;
+                }
+                p = p.lchild;
+            }
+            return h;
+        })
+        .method('maximumOf', function (node) {
+            var p = node;
+            if(p == null) return null;
+            while(true) {
+                if(p.rchild != null) {
+                    p = p.rchild;
+                    continue;
+                }
+                if(p.lchild != null) {
+                    p = p.lchild;
+                    continue;
+                }
+                break;
+            }
+            return p.value;
+        })
+        .method('maximum', function () {
+            return BSTree.prototype.maximumOf.call(this.root);
+        })
+        .method('minimumOf', function (node) {
+            var p = node;
             if(p == null) return null;
             while(true) {
                 if(p.lchild != null) {
@@ -158,18 +218,8 @@ var BSTree = (function (SuperTree, Node, Compor) {
             }
             return p.value;
         })
-        .method('lheight', function () {
-            var p = this.root,
-                h = 0;
-            if(p == null) return h;
-            while(true) {
-                h++;
-                if(p.lchild == null) {
-                    break;
-                }
-                p = p.lchild;
-            }
-            return h;
+        .method('minimum', function () {
+            return BSTree.prototype.minimumOf.call(this.root);
         })
         .method('isBalanced', function () {
             return this.root.isBalanced();
@@ -178,16 +228,70 @@ var BSTree = (function (SuperTree, Node, Compor) {
             return this.lheight() === this.rheight();
         })
         .method('predecessorOf', function (node) {
-            // todo
+            if(node.lchild != null) return BSTree.prototype.maximumOf(node.lchild);
+            var c = node, p = c.parent;
+            while(p != null && c === p.lchild) {
+                c = p;
+                p = c.parent;
+            }
+            return p;
         })
         .method('successorOf', function (node) {
-            // todo
+            if(node.rchild != null) return BSTree.prototype.minimumOf(node.rchild);
+            var c = node, p = c.parent;
+            while(p != null && c === p.rchild) {
+                c = p;
+                p = c.parent;
+            }
+            return p;
         })
-        .method('insert', function () {
-            // todo
+        .method('insert', function (value, asNode) {
+            var findResult = this.find(asNode ? value.value : value);
+            if(findResult.pos === 0) return findResult.node;
+
+            var newNode = asNode ? value : this.newNode(value);
+            if(findResult.pos === -1) findResult.node.left(newNode);
+            else findResult.node.right(newNode);
+            return newNode;
         })
-        .method('remove', function () {
-            // todo
+        .method('remove', function (node, asValue) {
+            if(node == null) return null;
+            if(asValue) {
+                var findResult = this.find(node);
+                if(findResult.pos !== 0) return null;
+                return this.remove(findResult.node);
+            }
+            if(node.isLeaf()) {
+                if(node.parent == null) {
+                    this.root = null;
+                    return null;
+                }
+                return node.parent.removeChild(node);
+            }
+            if(!node.isFull()) {
+                var child = (node.lchild || node.rchild);
+                node.removeChild();
+                var parent = node.parent;
+                if(parent == null) {
+                    this.root = child;
+                    return child;
+                }
+                var pos = node.position();
+                if(pos == -1) {
+                    parent.removeLeft();
+                    parent.left(child);
+                }
+                else {
+                    parent.removeRight();
+                    parent.right(child);
+                }
+                return parent;
+            }
+            // if node is full:
+            var successor = this.successorOf(node);
+            node.value = successor.value;
+            this.remove(successor);
+            return node;
         })
         .method('preOrder', function () {})
         .method('inOrder', function () {})
