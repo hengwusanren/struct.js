@@ -180,6 +180,17 @@ Function.method('implements', function() {
     });
 });
 
+Function.prototype.property = function(name, value) {
+    var names = name.split(' ');
+    for(var i = 0, len = names.length; i < len; i++) {
+        names[i] = names[i].trim();
+        if(names[i] == '') continue;
+
+        this.prototype[names[i]] = value;
+    }
+    return this;
+};
+
 
 /**
  * return a deep clone of an obj

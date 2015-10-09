@@ -49,8 +49,6 @@ var DLinkedList = (function (SuperList, SuperLinkedList, Node, Iter) {
 
         SuperList.call(this, 0, sizeLimit);
 
-        this._nodeType = Node;
-
         this._front = (value == null) ?
             null : this.newNode(value);
 
@@ -85,6 +83,7 @@ var DLinkedList = (function (SuperList, SuperLinkedList, Node, Iter) {
         ]);
     }
         .inherits(SuperLinkedList)
+        .property('_nodeType', Node)
         .method('_getFrontNode', function () {
             if (this._front !== null) return this._front; // cached
             return this._updateFrontNode();

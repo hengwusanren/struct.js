@@ -113,12 +113,10 @@ var BSTree = (function (SuperTree, Node, Compor) {
 
         SuperTree.call(this, binTreeNode);
 
-        if(binTreeNode.constructor !== Node) {
+        if(binTreeNode && binTreeNode.constructor !== this._nodeType) {
             throw new Error('Wrong type of node.');
             return null;
         }
-
-        this._nodeType = Node;
 
         if (!comparator) {
             var comparator = function (v1, v2) { return v1 > v2; };
@@ -127,10 +125,12 @@ var BSTree = (function (SuperTree, Node, Compor) {
     }
         .inherits(SuperTree)
         .implements()
+        .property('_nodeType', Node)
     /**
      * search a node based on comparison, starting at this node
      */
         .method('findFrom searchFrom', function (node, value, comparator) {
+            if(node == null) return null;
             if(!comparator) {
                 var comparator = function (v1, v2) {
                     return v1 == v2 ? 0 : (v1 > v2 ? 1 : -1);
@@ -230,6 +230,45 @@ var BSTree = (function (SuperTree, Node, Compor) {
         .method('minimum', function () {
             return BSTree.prototype.minimumOf.call(this.root);
         })
+        .method('dfs', function (visitor, immediateReturn, argsOfVisitor) {
+            // this is a recurse and immediately-invoking function
+            (function recurse(currentNode) {
+                var r;
+                if(currentNode.lchild != null) {
+                    r = recurse(currentNode.lchild);
+                    if (immediateReturn && r != null) return r;
+                }
+                if(currentNode.rchild != null) {
+                    r = recurse(currentNode.rchild);
+                    if (immediateReturn && r != null) return r;
+                }
+
+                if(visitor.apply(null, [currentNode].concat(argsOfVisitor))) {
+                    if(immediateReturn) return currentNode;
+                }
+                return null;
+
+            })(this.root);
+        })
+        .method('bfs', function (visitor, immediateReturn, argsOfVisitor) {
+            if(this.root == null) return null;
+            var q = new Queue();
+            q.push(this.root);
+            while(!q.isEmpty()) {
+                var t = q.top();
+                if(visitor.apply(null, [t].concat(argsOfVisitor))) {
+                    if(immediateReturn) return t;
+                }
+                if(t.lchild != null) {
+                    q.push(t.lchild);
+                }
+                if(t.rchild != null) {
+                    q.push(t.rchild);
+                }
+                q.pop();
+            }
+            return null;
+        })
         .method('isBalanced', function () {
             return this.root.isBalanced();
         })
@@ -256,9 +295,12 @@ var BSTree = (function (SuperTree, Node, Compor) {
         })
         .method('insert', function (value, asNode) {
             var findResult = this.find(asNode ? value.value : value);
-            if(findResult.pos === 0) return findResult.node;
-
             var newNode = asNode ? value : this.newNode(value);
+            if(findResult == null) {
+                this.root = newNode;
+                return this.root;
+            }
+            if(findResult.pos === 0) return findResult.node;
             if(findResult.pos === -1) findResult.node.left(newNode);
             else findResult.node.right(newNode);
             return newNode;

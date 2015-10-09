@@ -43,8 +43,6 @@ var LinkedList = (function (SuperList, Node, Iter) {
 
         SuperList.call(this, 0, sizeLimit);
 
-        this._nodeType = Node;
-
         this._front = (value == null) ?
             null : this.newNode(value);
 
@@ -70,6 +68,7 @@ var LinkedList = (function (SuperList, Node, Iter) {
         ]);
     }
         .inherits(SuperList)
+        .property('_nodeType', Node)
         .method('_getFrontNode', function () {
             return this._front;
         })

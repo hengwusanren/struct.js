@@ -103,8 +103,6 @@ var Graph = (function (Node, Map) {
             writable: false
         });
 
-        this._nodeType = Node;
-
         this._nodes = new Map();
 
         var counter = 0;
@@ -115,6 +113,7 @@ var Graph = (function (Node, Map) {
             return counter;
         };
     }
+        .property('_nodeType', Node)
         .method('size', function () {
             return this._nodes.size();
         })

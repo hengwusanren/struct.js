@@ -51,10 +51,9 @@ var Tree = (function (Node) {
         // check arguments:
         // todo
 
-        this.root = treeNode;
-
-        this._nodeType = Node;
+        this.root = treeNode ? treeNode : null;
     }
+        .property('_nodeType', Node)
         .method('newNode', function () {
             return Construct(this._nodeType, true, arguments);
         })

@@ -18,6 +18,9 @@ var Queue = (function (SuperDLinkedList) {
         SuperDLinkedList.apply(this, arguments);
     }
         .inherits(SuperDLinkedList)
+        .method('top', function () {
+            return SuperDLinkedList.prototype.front.call(this).value;
+        })
         .method('pop', function () {
             return SuperDLinkedList.prototype.rpop.call(this);
         })
