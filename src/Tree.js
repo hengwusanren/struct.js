@@ -58,19 +58,57 @@ var Tree = (function (Node) {
         .method('newNode', function () {
             return Construct(this._nodeType, true, arguments);
         })
-        .method('bfs', function (visitor) {
-            if(this.root == null) return false;
+    /**
+     * traverse this tree with depth-first search
+     * refer to: http://code.tutsplus.com/articles/data-structures-with-javascript-tree--cms-23393.
+     * visitor is also a comparator, while the node is its first arg, followed by some else
+     * if immediateReturn is true and visitor considers the current node matched, return it
+     */
+        .method('dfs', function (visitor, immediateReturn, argsOfVisitor) {
+            // this is a recurse and immediately-invoking function
+            (function recurse(currentNode) {
+                for(var key in currentNode.children) {
+                    if(!currentNode.children.hasOwnProperty(key)) continue;
+                    var r = recurse(currentNode.children[key]);
+                    if(immediateReturn && r != null) return r;
+                }
+
+                if(visitor.apply(null, [currentNode].concat(argsOfVisitor))) {
+                    if(immediateReturn) return currentNode;
+                }
+                return null;
+
+            })(this.root);
+        })
+    /**
+     * traverse this tree with breadth-first search
+     * visitor is also a comparator, while the node is its first arg, followed by some else
+     * if immediateReturn is true and visitor considers the current node matched, return it
+     */
+        .method('bfs', function (visitor, immediateReturn, argsOfVisitor) {
+            if(this.root == null) return null;
             var q = new Queue();
             q.push(this.root);
             while(!q.isEmpty()) {
                 var t = q.top();
-                visitor(t);
+                if(visitor.apply(null, [t].concat(argsOfVisitor))) {
+                    if(immediateReturn) return t;
+                }
                 for(var key in t.children) {
                     if(!t.children.hasOwnProperty(key)) continue;
                     q.push(t.children[key]);
                 }
                 q.pop();
             }
-            return this;
+            return null;
+        })
+    /**
+     * if immediateReturn is true, return the first found node
+     */
+        .method('find search', function (traversal, callback, immediateReturn, argsOfCallback) {
+            return traversal.apply(this, Array.prototype.slice.call(arguments, 1));
+        })
+        .method('contains has', function (traversal, comparator, argsOfComparator) {
+            return this.find(traversal, comparator, true, argsOfComparator) != null;
         });
 })(TreeNode);
