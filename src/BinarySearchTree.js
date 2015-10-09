@@ -127,6 +127,9 @@ var BSTree = (function (SuperTree, Node, Compor) {
     }
         .inherits(SuperTree)
         .implements()
+    /**
+     * search a node based on comparison, starting at this node
+     */
         .method('findFrom searchFrom', function (node, value, comparator) {
             if(!comparator) {
                 var comparator = function (v1, v2) {
@@ -153,9 +156,15 @@ var BSTree = (function (SuperTree, Node, Compor) {
                 return BSTree.prototype.findFrom(node.rchild, value, comparator);
             }
         })
+    /**
+     * search a node based on comparison
+     */
         .method('find search', function (value, comparator) {
             if(!comparator) var comparator = this.comparator;
             return BSTree.prototype.findFrom(this.root, value, comparator);
+        })
+        .method('findAll', function (comparator, args) {
+            // todo
         })
         .method('rheight', function () {
             var p = this.root,
@@ -293,7 +302,34 @@ var BSTree = (function (SuperTree, Node, Compor) {
             this.remove(successor);
             return node;
         })
-        .method('preOrder', function () {})
-        .method('inOrder', function () {})
-        .method('postOrder', function () {});
+        .method('preOrder', function (node, visitor) {
+            var root = node;
+            if (root == null)
+                return;
+            visitor(root);
+            if (root.lchild != null)
+                BSTree.prototype.preOrder(root.lchild, visitor);
+            if (root.rchild != null)
+                BSTree.prototype.preOrder(root.rchild, visitor);
+        })
+        .method('inOrder', function (node, visitor) {
+            var root = node;
+            if (root == null)
+                return;
+            if (root.lchild != null)
+                BSTree.prototype.inOrder(root.lchild, visitor);
+            visitor(root);
+            if (root.rchild != null)
+                BSTree.prototype.inOrder(root.rchild, visitor);
+        })
+        .method('postOrder', function (node, visitor) {
+            var root = node;
+            if (root == null)
+                return;
+            if (root.lchild != null)
+                BSTree.prototype.postOrder(root.lchild, visitor);
+            if (root.rchild != null)
+                BSTree.prototype.postOrder(root.rchild, visitor);
+            visitor(root);
+        });
 })(Tree, BinaryTreeNode, Comparator);

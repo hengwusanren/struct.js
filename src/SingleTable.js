@@ -74,70 +74,94 @@ var SingleTable = (function (Iter) {
             }
             return this;
         })
-        .method('hasValue', function (value, comparator) {
-            // check arguments:
-            // todo
-
-            if(!comparator) {
-                var comparator = function (v1, v2) { return v1 == v2 };
-            }
+        .method('traverse', function (callback, immediateReturn) {
             for (var key in this._table) {
                 if(!this._table.hasOwnProperty(key)) continue;
-                if (comparator(this._table[key], value)) {
-                    return true;
+                var entry = {
+                    key: key,
+                    value: this._table[key]
+                };
+                if (callback(entry)) {
+                    if(immediateReturn) return entry;
                 }
             }
-            return false;
+            return immediateReturn ? null : this;
         })
-        .method('getKey find', function (value, comparator) {
+        .method('hasValue', function (value, matcher) {
             // check arguments:
             // todo
 
-            if(!comparator) {
-                var comparator = function (v1, v2) { return v1 == v2 };
+            if(!matcher) {
+                if(value == null) return false;
+                var matcher = function (e) { return e.value == value; };
             }
-            for (var key in this._table) {
-                if(!this._table.hasOwnProperty(key)) continue;
-                if (comparator(this._table[key], value)) {
-                    return key;
-                }
-            }
-            return null;
+            var result = this.traverse(matcher, true);
+            return !!result;
         })
-        .method('getKeys findAll', function (value, comparator) {
+    /**
+     * return a matched entry
+     */
+        .method('find', function (value, matcher) {
             // check arguments:
             // todo
 
-            var keys = new Array();
+            if(!matcher) {
+                if(value == null) return null;
+                var matcher = function (e) { return e.value == value; };
+            }
+            return this.traverse(matcher, true);
+        })
+    /**
+     * return all matched entries
+     */
+        .method('findAll', function (value, matcher) {
+            // check arguments:
+            // todo
+
+            var results = new Array();
 
             if(arguments.length == 0) {
-                for (var key in this._table) {
-                    if(!this._table.hasOwnProperty(key)) continue;
-                    keys.push(key);
-                }
+                var matcher = function (e) {
+                    results.push(e);
+                };
             } else {
-                if(!comparator) {
-                    var comparator = function (v1, v2) { return v1 == v2 };
-                }
-                for (var key in this._table) {
-                    if(!this._table.hasOwnProperty(key)) continue;
-                    if(comparator(this._table[key], value)) {
-                        keys.push(key);
+                if(!matcher) {
+                    if(value == null) return null;
+                    var matcher = function (e) {
+                        if(e.value == value) {
+                            results.push(e);
+                            return true;
+                        }
+                        return false;
+                    };
+                } else {
+                    var naiveMatcher = matcher;
+                    matcher = function (e) {
+                        if(naiveMatcher(e)) {
+                            results.push(e);
+                            return true;
+                        }
+                        return false;
                     }
                 }
             }
-            return keys;
+            this.traverse(matcher);
+            return results;
         })
-        .method('removeValue', function (value, comparator) {
+        .method('removeValue', function (value) {
             // check arguments:
             // todo
 
-            if(!comparator) {
-                var comparator = function (v1, v2) { return v1 == v2 };
+            var results = this.findAll(value);
+            for (var i = 0, len = results.length; i < len; i++) {
+                this.remove(results[i].key);
             }
-            var keys = this.getKeys(value, comparator);
-            for (var i = 0, len = keys.length; i < len; i++) {
-                this.remove(keys[i]);
+            return this;
+        })
+        .method('removeAll', function (matcher) {
+            var results = this.findAll(null, matcher);
+            for (var i = 0, len = results.length; i < len; i++) {
+                this.remove(results[i].key);
             }
             return this;
         })

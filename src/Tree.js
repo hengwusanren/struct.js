@@ -105,10 +105,10 @@ var Tree = (function (Node) {
     /**
      * if immediateReturn is true, return the first found node
      */
-        .method('find search', function (traversal, callback, immediateReturn, argsOfCallback) {
+        .method('traverse', function (traversal, callback, immediateReturn, argsOfCallback) {
             return traversal.apply(this, Array.prototype.slice.call(arguments, 1));
         })
-        .method('contains has', function (traversal, comparator, argsOfComparator) {
-            return this.find(traversal, comparator, true, argsOfComparator) != null;
+        .method('contains has', function (traversal, matcher, argsOfMatcher) {
+            return this.traverse(traversal, matcher, true, argsOfMatcher) != null;
         });
 })(TreeNode);
