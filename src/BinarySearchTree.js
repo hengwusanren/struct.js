@@ -58,7 +58,7 @@ var BSTree = (function (SuperTree, Node, Compor) {
         // check arguments:
         // todo
 
-        SuperTree.call(this, rootValue);
+        SuperTree.apply(this, [rootValue]);
 
         this.size = this.isNilNode(this.root) ? 0 : 1;
 

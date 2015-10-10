@@ -61,7 +61,7 @@ var Tree = (function (Node) {
         // todo
 
         this._nil = this._nodeType.prototype.nil();
-        if(arguments.length > 0) {
+        if(rootValue != null) {
             this.root = this.newNode(rootValue);
         } else {
             this.root = this._nil;
