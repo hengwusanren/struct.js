@@ -11,13 +11,13 @@ var RBTreeNode = (function (SuperNode) {
 
     if (!SuperNode) return null;
 
-    return function (value) {
+    return function (value, color) {
         // check arguments:
         // todo
 
         SuperNode.apply(this, arguments);
 
-        this.color = true; // true: red, false: black
+        this.color = color ? (!!color) : false; // true: red, false: black
     }
         .inherits(SuperNode);
 })(BinaryTreeNode);

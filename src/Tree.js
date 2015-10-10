@@ -52,6 +52,7 @@ var Tree = (function (Node) {
         // todo
 
         this.root = treeNode ? treeNode : null;
+        this.size = treeNode ? 1 : 0;
     }
         .property('_nodeType', Node)
         .method('newNode', function () {

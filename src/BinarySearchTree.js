@@ -298,11 +298,13 @@ var BSTree = (function (SuperTree, Node, Compor) {
             var newNode = asNode ? value : this.newNode(value);
             if(findResult == null) {
                 this.root = newNode;
+                this.size = 1;
                 return this.root;
             }
             if(findResult.pos === 0) return findResult.node;
             if(findResult.pos === -1) findResult.node.left(newNode);
             else findResult.node.right(newNode);
+            this.size++;
             return newNode;
         })
         .method('remove', function (node, asValue) {
@@ -310,15 +312,19 @@ var BSTree = (function (SuperTree, Node, Compor) {
             if(asValue) {
                 var findResult = this.find(node);
                 if(findResult.pos !== 0) return null;
+                this.size--;
                 return this.remove(findResult.node);
             }
             if(node.isLeaf()) {
                 if(node.parent == null) {
                     this.root = null;
+                    this.size = 0;
                     return null;
                 }
+                this.size--;
                 return node.parent.removeChild(node);
             }
+            this.size--;
             if(!node.isFull()) {
                 var child = (node.lchild || node.rchild);
                 node.removeChild();
