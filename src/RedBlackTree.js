@@ -19,7 +19,19 @@ var RBTreeNode = (function (SuperNode) {
 
         this.color = color ? (!!color) : false; // true: red, false: black
     }
-        .inherits(SuperNode);
+        .inherits(SuperNode)
+        .method('nil', function () {
+            return {
+                value: null,
+                lchild: null,
+                rchild: null,
+                parent: null,
+                color: false
+            };
+        })
+        .method('isNil', function (node) {
+            return (node != null && node.value === null && node.color === false);
+        });
 })(BinaryTreeNode);
 
 /********************************
@@ -31,7 +43,7 @@ var RBTree = (function (SuperTree, Node) {
 
     if (!SuperTree) return null;
 
-    return function (binTreeNode, comparator) {
+    return function (rootValue, comparator) {
         // check arguments:
         // todo
 
@@ -39,6 +51,14 @@ var RBTree = (function (SuperTree, Node) {
     }
         .inherits(SuperTree)
         .property('_nodeType', Node)
+        .method('isNilNode', function (node) {
+            return node === this._nil;
+        })
+        .method('_connectNil', function (node) {
+            if(this.isNilNode(node)) return;
+            if(!node.lchild) node.lchild = this._nil;
+            if(!node.rchild) node.rchild = this._nil;
+        })
         .method('rotate', function (dir) {
             // todo
         })

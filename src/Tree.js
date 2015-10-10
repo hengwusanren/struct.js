@@ -19,10 +19,20 @@ var TreeNode = (function (Map) {
         this.children = new Map();
         this.parent = null;
     }
+        .method('nil', function () {
+            return null;
+        })
+        .method('isNil', function (node) {
+            return node == null;
+        })
         .method('hasChild', function (key) {
             return this.children.has(key);
         })
         .method('putChild', function (key, node) {
+            if(this.isNil(node)) {
+                this.removeChild(key);
+                return this;
+            }
             this.children.put(key, node);
             node.parent = this;
             return this;
@@ -32,8 +42,7 @@ var TreeNode = (function (Map) {
         })
         .method('removeChild', function (key) {
             var child = this.getChild(key);
-            if(child == null) return this;
-            child.parent = null;
+            if(child != null) child.parent = null;
             this.children.remove(key);
         });
 })(SingleTable);
@@ -47,16 +56,25 @@ var Tree = (function (Node) {
 
     if(!Node) return null;
 
-    return function (treeNode) {
+    return function (rootValue) {
         // check arguments:
         // todo
 
-        this.root = treeNode ? treeNode : null;
-        this.size = treeNode ? 1 : 0;
+        this._nil = this._nodeType.prototype.nil();
+        if(arguments.length > 0) {
+            this.root = this.newNode(rootValue);
+        } else {
+            this.root = this._nil;
+        }
     }
         .property('_nodeType', Node)
         .method('newNode', function () {
-            return Construct(this._nodeType, true, arguments);
+            var node = Construct(this._nodeType, true, arguments);
+            node.parent = this._nil;
+            return node;
+        })
+        .method('isNilNode', function (node) {
+            return this._nodeType.prototype.isNil(node);
         })
     /**
      * traverse this tree with depth-first search
@@ -65,6 +83,8 @@ var Tree = (function (Node) {
      * if immediateReturn is true and visitor considers the current node matched, return it
      */
         .method('dfs', function (visitor, immediateReturn, argsOfVisitor) {
+            if(this.root == null || this.isNilNode(this.root)) return null;
+
             // this is a recurse and immediately-invoking function
             (function recurse(currentNode) {
                 for(var key in currentNode.children) {
@@ -86,7 +106,8 @@ var Tree = (function (Node) {
      * if immediateReturn is true and visitor considers the current node matched, return it
      */
         .method('bfs', function (visitor, immediateReturn, argsOfVisitor) {
-            if(this.root == null) return null;
+            if(this.root == null || this.isNilNode(this.root)) return null;
+
             var q = new Queue();
             q.push(this.root);
             while(!q.isEmpty()) {

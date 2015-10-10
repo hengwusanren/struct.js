@@ -152,9 +152,16 @@ Function.prototype.method = function(name, func) {
         names[i] = names[i].trim();
         if(names[i] == '') continue;
 
-        //if (!this.prototype[name]) {
         this.prototype[names[i]] = func;
-        //}
+        /*
+        var p = this.prototype;
+        while(p && !p.hasOwnProperty(names[i])) p = p.__proto__;
+        if(p == null || p === Object) {
+            this.prototype[names[i]] = func;
+        } else {
+            p[names[i]] = func;
+        }
+        */
     }
     return this;
 };
