@@ -283,7 +283,7 @@ var Graph = (function (Node, Map) {
 
 (function () { // test
 
-    //return; // not execute tests
+    return; // not execute tests
 
     var g = new Graph();
 
