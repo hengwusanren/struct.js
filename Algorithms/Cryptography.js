@@ -163,6 +163,8 @@ var SHA1 = {};
 
 var MD5 = {};
 
+var RSA = {};
+
 (function () {
     var testStr = "My nickname is Hengwusanren. My birthday is 1991-03-27.";
     console.log(testStr);
