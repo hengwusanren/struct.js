@@ -35,7 +35,7 @@ var DListNode = (function () {
 })();
 
 /********************************
- * DLinkedList
+ * Doubly LinkedList
  ********************************/
 var DLinkedList = (function (SuperList, SuperLinkedList, Node, Iter) {
 
