@@ -21,12 +21,41 @@ var BitMap = (function () {
         .method('size', function () {
             return this._size;
         })
-        .method('contains has', function () {})
-        .method('add', function () {})
-        .method('remove', function () {})
-        .method('clear', function () {})
+        .method('contains has', function (v) {
+            if(v >= this.bucketSize * this._capacity || v < 0) return false;
+            var bucket = this._data[Math.floor(v / this.bucketSize)],
+                bonus = v % this.bucketSize; // can be optimised by Bit Manipulation
+            return ((bucket >> bonus) & 1) === 1;
+        })
+        .method('add', function (v) {
+            if(v >= this.bucketSize * this._capacity || v < 0) return false;
+            var index = Math.floor(v / this.bucketSize),
+                bucket = this._data[index],
+                bonus = v % this.bucketSize; // can be optimised by Bit Manipulation
+            if(((bucket >> bonus) & 1) === 1) return this;
+            this._data[index] = (bucket | (1 << bonus));
+            this._size++;
+            return this;
+        })
+        .method('remove', function (v) {
+            if(v >= this.bucketSize * this._capacity || v < 0) return false;
+            var index = Math.floor(v / this.bucketSize),
+                bucket = this._data[index],
+                bonus = v % this.bucketSize; // can be optimised by Bit Manipulation
+            if(((bucket >> bonus) & 1) === 1) {
+                this._data[index] = (bucket & ((-1) ^ (1 << bonus)));
+                this._size--;
+            }
+            return this;
+        })
+        .method('clear', function () {
+            this._data = new (this.arrayTypes[this.bucketSize])(this._capacity).fill(0);
+            this._size = 0;
+            return this;
+        })
         .method('numToBinString', function (dec){
-            return (dec >>> 0).toString(2);
+            var s = (dec >>> 0).toString(2);
+            return (new Array(this.bucketSize - s.length)).fill(0).join('') + s;
         })
         .method('toString', function () {
             var s = '';
