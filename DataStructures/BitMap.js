@@ -2,6 +2,12 @@
  * Created by hengwu on 2015/10/11.
  */
 
+/**
+ * BitMap
+ * 事实上 JS 并没有真正意义的 Array，Array 的内存并不一定是连续的
+ * 因此一个 Array 所占的内存不能用静态语言中的 sizeof 直接计算
+  */
+
 var BitMap = (function () {
     "use strict";
     return function (size, bucketSize) {
@@ -70,6 +76,8 @@ var BitMap = (function () {
 })();
 
 (function () {
+    return; // not test
+
     var bm = new BitMap(100, 8);
     bm.print();
 })
