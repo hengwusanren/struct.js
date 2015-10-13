@@ -59,6 +59,12 @@ var RBTree = (function (SuperTree, Node) {
             if(!node.lchild) node.lchild = this._nil;
             if(!node.rchild) node.rchild = this._nil;
         })
+    //    |                             |
+    //   (x)    ---LeftRotate(x)-->    (y)
+    //   / \                           / \
+    //  a  (y)  <--RightRotate(y)--  (x)  c
+    //     / \                       / \
+    //    b   c                     a   b
         .method('_llRotate', function () {
             // todo
         })
