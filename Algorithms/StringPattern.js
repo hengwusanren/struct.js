@@ -52,12 +52,13 @@ var DFAMatcher = {
         return -1;
     },
     run: function () {
+        if(this.pattern.length == 0) return 0;
         this.charSet = this._initCharSet(this.data);
         this.charSet = this._initCharSet(this.pattern);
         this.transition = this._initTransition(this.pattern, this.charSet);
         return (this._finiteAutomationMatcher(this.data, this.transition, this.pattern.length));
     },
-    test: function () {
+    test_: function () {
         for(var i = 0; i < 100; i++) {
             var randStr = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
                 var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
@@ -65,18 +66,23 @@ var DFAMatcher = {
             });
             this.data = randStr;
             var textLen = this.data.length,
-                randBegin = Math.random()*textLen|0;
-            this.pattern = this.data.substr(randBegin, Math.random()*(textLen - randBegin)|0);
+                randBegin = Math.random()*textLen| 0,
+                randLen = Math.random()*(textLen - randBegin)|0;
+            this.pattern = this.data.substr(randBegin, randLen);
             console.log('data:    ' + this.data);
             console.log('pattern: ' + this.pattern);
             var result = this.run();
             console.log('result:  ' + result);
-            if(result !== randBegin) console.log('wrong!');
+            if(randStr.substr(result, randLen) !== this.pattern) {
+                console.log('wrong!');
+                console.log('randBegin: ' + randBegin);
+                console.log('randLen:   ' + randLen);
+            }
         }
     }
 };
 
-DFAMatcher.test();
+DFAMatcher.test_();
 
 var KMP = {
     data: '',
