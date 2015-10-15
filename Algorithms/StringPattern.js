@@ -11,12 +11,11 @@ var RabinKarp = {
 var DFAMatcher = {
     data: '',
     pattern: '',
-    charSet: {},
-    transition: [],
-    _initCharSet: function (pattern) {
-        var charSet = {};
-        for(var i = 0, len = pattern.length; i < len; i++) {
-            charSet[pattern.charAt(i)] = true;
+    _charSet: {},
+    _transition: [],
+    _initCharSet: function (textdata, charSet) {
+        for(var i = 0, len = textdata.length; i < len; i++) {
+            charSet[textdata.charAt(i)] = true;
         }
         return charSet;
     },
@@ -28,8 +27,8 @@ var DFAMatcher = {
     },
     _initTransition: function (pattern, charSet) {
         var p = pattern,
-            len = p.length;
-        var transition = new Array(len + 1);
+            len = p.length,
+            transition = new Array(len + 1);
         for(var i = 0; i <= len; i++) {
             transition[i] = {};
             for(var char in charSet) {
@@ -53,16 +52,16 @@ var DFAMatcher = {
     },
     run: function () {
         if(this.pattern.length == 0) return 0;
-        this.charSet = this._initCharSet(this.data);
-        this.charSet = this._initCharSet(this.pattern);
-        this.transition = this._initTransition(this.pattern, this.charSet);
-        return (this._finiteAutomationMatcher(this.data, this.transition, this.pattern.length));
+        this._initCharSet(this.data, this._charSet);
+        this._initCharSet(this.pattern, this._charSet);
+        this._transition = this._initTransition(this.pattern, this._charSet);
+        return this._finiteAutomationMatcher(this.data, this._transition, this.pattern.length);
     },
     test_: function () {
         for(var i = 0; i < 100; i++) {
-            var randStr = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-                var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
-                return v.toString(16);
+            var randStr = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'.replace(/[x]/g, function() {
+                var r = Math.random()*16|0;
+                return r.toString(16);
             });
             this.data = randStr;
             var textLen = this.data.length,
@@ -82,13 +81,53 @@ var DFAMatcher = {
     }
 };
 
-DFAMatcher.test_();
+//DFAMatcher.test_();
 
 var KMP = {
     data: '',
     pattern: '',
-    run: function () {}
+    _computePrefix: function (pattern) {
+        var m = pattern.length,
+            pi = (new Array(m)).fill(0),
+            k = 0;
+        for(var q = 1; q < m; q++) {
+            while(k > 0 && pattern.charAt(k) != pattern.charAt(q)) {
+                k = pi[k - 1];
+            }
+            if(pattern.charAt(k) == pattern.charAt(q)) k++;
+            pi[q] = k;
+        }
+        return pi;
+    },
+    _kmp: function (textdata, pattern) {
+        var n = textdata.length,
+            m = pattern.length,
+            pi = this._computePrefix(pattern),
+            q = 0,
+            results = [];
+        for(var i = 0; i < n; i++) {
+            while(q > 0 && pattern.charAt(q) != textdata.charAt(i)) {
+                q = pi[q - 1];
+            }
+            if(pattern.charAt(q) == textdata.charAt(i)) q++;
+            if(q == m) {
+                results.push(i + 1 - m);
+                q = pi[q - 1];
+            }
+        }
+        return results;
+    },
+    run: function () {
+        return this._kmp(this.data, this.pattern);
+    },
+    test_: function () {
+        this.data = '23wr43t35yrth6u56yrt';
+        this.pattern = 'yrt';
+        console.log(this.run());
+    }
 };
+
+KMP.test_();
 
 var BoyerMoore = {
     data: '',
