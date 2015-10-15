@@ -2,7 +2,7 @@
  * Created by hengwu on 2015/10/11.
  */
 
-var RabinKarp = {
+var RabinKarpMatcher = {
     data: '',
     pattern: '',
     run: function () {}
@@ -65,7 +65,7 @@ var DFAMatcher = {
             });
             this.data = randStr;
             var textLen = this.data.length,
-                randBegin = Math.random()*textLen| 0,
+                randBegin = Math.random()*textLen|0,
                 randLen = Math.random()*(textLen - randBegin)|0;
             this.pattern = this.data.substr(randBegin, randLen);
             console.log('data:    ' + this.data);
@@ -83,7 +83,7 @@ var DFAMatcher = {
 
 //DFAMatcher.test_();
 
-var KMP = {
+var KMPMatcher = {
     data: '',
     pattern: '',
     _computePrefix: function (pattern) {
@@ -121,18 +121,18 @@ var KMP = {
         return this._kmp(this.data, this.pattern);
     },
     test_: function () {
-        this.data = '23wr43t35yrth6u56yrt';
-        this.pattern = 'yrt';
+        this.data = '1010101010101';
+        this.pattern = '1';
         console.log(this.run());
     }
 };
 
-KMP.test_();
+KMPMatcher.test_();
 
-var BoyerMoore = {
+var BoyerMooreMatcher = {
     data: '',
     pattern: '',
     run: function () {}
 };
 
-var RegexEngine = {};
+var RegexMatcher = {};
