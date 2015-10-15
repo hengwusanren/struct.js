@@ -135,4 +135,11 @@ var BoyerMooreMatcher = {
     run: function () {}
 };
 
-var RegexMatcher = {};
+var RegexMatcher = {
+    data: '',
+    pattern: '',
+    _charSet: {},
+    _transition: [],
+    run: function () {},
+    test_: function () {}
+};
