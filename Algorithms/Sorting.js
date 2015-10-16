@@ -33,7 +33,19 @@ var HeapSort = {
 };
 
 var BubbleSort = {
-    run: function (data) {}
+    run: function (data) {
+        var bubbleSort = function (arr) {
+            for (var j = 0, n = arr.size(); j < n - 1; j++)
+                for (var i = 0; i < n - 1 - j; i++) {
+                    if(arr.get(i) > arr.get(i + 1)) {
+                        var tmp = arr.get(i);
+                        arr.set(i, arr.get(i + 1));
+                        arr.set(i + 1, tmp);
+                    }
+                }
+        };
+        bubbleSort(data);
+    }
 };
 
 var InsertSort = {
@@ -49,7 +61,12 @@ var HillSort = {
 };
 
 var CountSort = {
-    run: function (data) {}
+    run: function (data) {
+        var countSort = function (arr) {
+            // todo
+        };
+        countSort(data);
+    }
 };
 
 var BucketSort = {
