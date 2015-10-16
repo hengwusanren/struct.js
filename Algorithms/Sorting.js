@@ -63,7 +63,19 @@ var HillSort = {
 var CountSort = {
     run: function (data) {
         var countSort = function (arr) {
-            // todo
+            var counter = [];
+            for(var i = 0, n = arr.size(); i < n; i++) {
+                var v = arr.get(i);
+                if(counter[v]) counter[v]++;
+                else counter[v] = 1;
+            }
+            var index = 0;
+            for(var i in counter) {
+                if(!counter.hasOwnProperty(i)) continue;
+                for(var count = parseInt(counter[i]); count > 0; count--, index++) {
+                    arr.set(index, i);
+                }
+            }
         };
         countSort(data);
     }
