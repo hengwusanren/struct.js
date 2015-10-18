@@ -4,7 +4,7 @@
 
 var QuickSort = {
     run: function (data) {
-        var quickSort = function (arr, left, right) {
+        var sort = function (arr, left, right) {
             if(left >= right) return;
             //以中间元素为基准
             var middle = arr.get(Math.floor((left + right + 1) / 2));
@@ -20,7 +20,7 @@ var QuickSort = {
             quickSort(arr, left, i - 1);
             quickSort(arr, j + 1, right);
         };
-        quickSort(data, 0, data.size() - 1);
+        sort(data, 0, data.size() - 1);
     }
 };
 
@@ -34,7 +34,7 @@ var HeapSort = {
 
 var BubbleSort = {
     run: function (data) {
-        var bubbleSort = function (arr) {
+        var sort = function (arr) {
             for (var j = 0, n = arr.size(); j < n - 1; j++)
                 for (var i = 0; i < n - 1 - j; i++) {
                     if(arr.get(i) > arr.get(i + 1)) {
@@ -44,7 +44,7 @@ var BubbleSort = {
                     }
                 }
         };
-        bubbleSort(data);
+        sort(data);
     }
 };
 
@@ -62,7 +62,7 @@ var HillSort = {
 
 var CountSort = {
     run: function (data) {
-        var countSort = function (arr) {
+        var sort = function (arr) {
             var counter = [];
             for(var i = 0, n = arr.size(); i < n; i++) {
                 var v = arr.get(i);
@@ -77,7 +77,7 @@ var CountSort = {
                 }
             }
         };
-        countSort(data);
+        sort(data);
     }
 };
 
@@ -86,5 +86,33 @@ var BucketSort = {
 };
 
 var RadixSort = {
-    run: function (data) {}
+    run: function (data) {
+        var radix = 4; // 4 digits mean 8
+        var sort = function (arr, valueOf) {
+            var counter = [],
+                canStop = true;
+            for(var i = 0, n = arr.size(); i < n; i++) {
+                var v = valueOf(arr.get(i));
+                if(v > 0) canStop = false;
+                if(counter[v] == null) counter[v] = [];
+                counter[v].push(arr.get(i));
+            }
+            if(canStop) return false;
+            var index = 0;
+            for(var i in counter) {
+                if(!counter.hasOwnProperty(i)) continue;
+                var subArr = counter[i];
+                for(var j = 0, k = subArr.length; j < k; j++, index++) {
+                    arr.set(index, subArr[j]);
+                }
+            }
+            return true;
+        };
+        var offset = radix;
+        while(sort(data, function (v) {
+            return v ^ ((v >> offset) << offset);
+        })) {
+            offset += radix;
+        }
+    }
 };
