@@ -49,11 +49,36 @@ var BubbleSort = {
 };
 
 var InsertSort = {
-    run: function (data) {}
+    run: function (data) {
+        var sort = function (arr) {
+            for(var i = 1, n = arr.size(); i < n; i++) {
+                var v = arr.get(i);
+                for(var j = i - 1; j >= 0 && arr.get(j) > v; j--) {
+                    arr.set(j + 1, arr.get(j));
+                }
+                arr.set(j + 1, v);
+            }
+        };
+        sort(data);
+    }
 };
 
 var SelectionSort = {
-    run: function (data) {}
+    run: function (data) {
+        var sort = function (arr) {
+            for(var i = 0, n = arr.size(); i < n - 1; i++) {
+                var minIndex = i;
+                for(var j = i + 1; j < n; j++)
+                    if(arr.get(j) < arr.get(minIndex)) minIndex = j;
+                if(minIndex != i) {
+                    var tmp = arr.get(i);
+                    arr.set(i, arr.get(minIndex));
+                    arr.set(minIndex, tmp);
+                }
+            }
+        };
+        sort(data);
+    }
 };
 
 var HillSort = {
@@ -82,7 +107,13 @@ var CountSort = {
 };
 
 var BucketSort = {
-    run: function (data) {}
+    run: function (data) {
+        var bucketCount = 32;
+        var sort = function (arr) {
+            // todo
+        };
+        sort(data);
+    }
 };
 
 var RadixSort = {
