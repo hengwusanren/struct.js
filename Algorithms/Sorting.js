@@ -81,7 +81,7 @@ var SelectionSort = {
     }
 };
 
-var HillSort = {
+var ShellSort = {
     run: function (data) {}
 };
 
@@ -107,12 +107,28 @@ var CountSort = {
 };
 
 var BucketSort = {
-    run: function (data) {
-        var bucketCount = 32;
-        var sort = function (arr) {
-            // todo
+    run: function (data, bucketOf) {
+        var sort = function (arr, bucketOf, bucketCount) {
+            var buckets = bucketCount ? new Array(bucketCount) : [];
+            for(var i = 0, n = arr.size(); i < n; i++) {
+                buckets[bucketOf(arr.get(i))].push(arr.get(i));
+            }
+            var index = 0;
+            for(var i = 0, bucketNum = buckets.length; i < bucketNum; i++) {
+                if(!buckets[i]) continue;
+                var curArr = buckets[i];
+                InsertSort.run({
+                    data: curArr,
+                    size: curArr.length,
+                    get: function (idx) { return this.data[idx] },
+                    set: function (idx, value) { this.data[idx] = value }
+                });
+                for(var j = 0, n = curArr.length; j < n; j++, index++) {
+                    arr.set(index, curArr[j]);
+                }
+            }
         };
-        sort(data);
+        sort(data, bucketOf);
     }
 };
 
