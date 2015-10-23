@@ -6,12 +6,14 @@ var BigInteger = (function () {
 
     "use strict";
 
-    return function (value) {
-        this.positive = value >= 0;
+    return function (value, asArray, negative) {
+        this.positive = asArray ? !negative : (value >= 0);
         //this._initialCapacity = 32;
         //this._capacity = this._initialCapacity;
         this.radix = 16; // an element in this.data ranges from 0 to (2^16 - 1).
         this.data = new Array();
+        if(asArray) this.data = value;
+        else this.load(value);
     }
         .method('load', function (value) {
             var r = this.radix;
@@ -28,7 +30,13 @@ var BigInteger = (function () {
         .method('_shrink', function () {
             while(this.data.length > 0 && this.data[this.data.length - 1] == 0) this.data.pop();
         })
+        .method('reverse', function () {
+            this.positive = !this.positive;
+            return this;
+        })
         .method('add', function (v) {
+            var positive = (this.positive && v.positive) || (!this.positive && !v.positive);
+            if(!positive) return this.subtract(v.reverse());
             var len1 = this.data.length,
                 len2 = v.data.length,
                 bonus = 0,
@@ -40,9 +48,11 @@ var BigInteger = (function () {
                 bonus = (tmp >> r);
             }
             if(bonus > 0) arr.push(bonus);
-            // todo
+            return new BigInteger(arr, true, !this.positive);
         })
         .method('subtract', function (v) {
+            var positive = (this.positive && !v.positive) || (!this.positive && v.positive);
+            if(!positive) return this.add(v.reverse());
             // todo
         })
         .method('multiply', function (v) {
