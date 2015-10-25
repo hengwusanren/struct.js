@@ -53,7 +53,18 @@ var BigInteger = (function () {
         .method('subtract', function (v) {
             var positive = (this.positive && !v.positive) || (!this.positive && v.positive);
             if(!positive) return this.add(v.reverse());
-            // todo
+            var len1 = this.data.length,
+                len2 = v.data.length,
+                bonus = 0,
+                arr = [],
+                r = this.radix;
+            for(var i = 0; i < len1 || i < len2; i++) {
+                var tmp = (this.data[i] ? this.data[i] : 0) - (v.data[i] ? v.data[i] : 0) - bonus;
+                arr.push(tmp ^ ((tmp >> r) << r));
+                bonus = tmp;
+            }
+            if(bonus > 0) arr.push(bonus);
+            return new BigInteger(arr, true, !this.positive);
         })
         .method('multiply', function (v) {
             // todo
