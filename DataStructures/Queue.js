@@ -21,6 +21,9 @@ var Queue = (function (SuperDLinkedList) {
         .method('top', function () {
             return SuperDLinkedList.prototype.front.call(this).value;
         })
+        .method('bottom', function () {
+            return SuperDLinkedList.prototype.back.call(this).value;
+        })
         .method('pop', function () {
             return SuperDLinkedList.prototype.rpop.call(this);
         })

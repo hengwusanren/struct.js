@@ -200,6 +200,42 @@ var DLinkedList = (function (SuperList, SuperLinkedList, Node, Iter) {
             }
             return this._updateHeadRear();
         })
+        .method('clear', function () { // to be tested!
+            this._front = null;
+            this._back = null;
+            this._head = {
+                next: null
+            };
+            this._rear = {
+                prev: null
+            };
+            this._size = 0;
+            return this;
+        })
+        .method('drop', function (node) { // to be tested!
+            if(node == null) return null;
+            var p = node.prev,
+                n = node.next;
+            node.prev = null;
+            node.next = null;
+            if(p && n) {
+                p.next = n;
+                n.prev = p;
+            } else if(!(!p && !n)) {
+                if(!p) {
+                    n.prev = null;
+                    this._front = n;
+                } else {
+                    p.next = null;
+                    this._back = p;
+                }
+            } else {
+                this.clear();
+            }
+            this._size--;
+            this._updateHeadRear();
+            return node;
+        })
         .method('rfind', function (value, comparator) {
             // check arguments:
             // todo

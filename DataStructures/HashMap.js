@@ -3,10 +3,10 @@
  */
 
 /********************************
- * HashTable
+ * HashMap
  * Table[indexOf(hashOf(key))] contains Entry {key,value,next}
  ********************************/
-var HashTable = (function (Iter) {
+var HashMap = (function (Iter) {
 
     "use strict";
 
