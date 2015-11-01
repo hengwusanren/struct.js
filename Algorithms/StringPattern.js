@@ -132,6 +132,17 @@ KMPMatcher.test_();
 var BoyerMooreMatcher = {
     data: '',
     pattern: '',
+    _charSetSize: 256,
+    _badChar: [],
+    _goodSuffix: {},
+    _prepareBadChars: function (pattern, charSetSize, badChar) {
+        for(var i = 0; i < charSetSize; i++) {
+            badChar[i] = pattern.length;
+        }
+        for(var i = 0, m = pattern.length; i < m - 1; i++) {
+            badChar[pattern.charCodeAt(i)] = m - 1 - i;
+        }
+    },
     run: function () {}
 };
 
