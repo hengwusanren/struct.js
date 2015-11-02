@@ -626,8 +626,19 @@ var ComplexNumber = (function () {
         .method('modSquare', function () {
             return this.a * this.a + this.b * this.b;
         })
-        .method('module', function () {
+        .method('modulus', function () {
             return Math.sqrt(this.modSquare());
+        })
+        .method('arg phase', function () {
+            if(this.a != 0) {
+                var c = Math.atan(this.b / this.a);
+                if(this.a > 0) return c;
+                if(this.b >= 0) return c + Math.PI;
+                return c - Math.PI;
+            }
+            if(this.b > 0) return Math.PI / 2;
+            if(this.b < 0) return -Math.PI / 2;
+            return null;
         })
         .method('add', function (c) {
             c = ComplexNumber.prototype.numberCheck(c);
