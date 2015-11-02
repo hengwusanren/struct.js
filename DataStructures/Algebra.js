@@ -626,6 +626,9 @@ var ComplexNumber = (function () {
         .method('modSquare', function () {
             return this.a * this.a + this.b * this.b;
         })
+        .method('module', function () {
+            return Math.sqrt(this.modSquare());
+        })
         .method('add', function (c) {
             c = ComplexNumber.prototype.numberCheck(c);
             if(c == null) return null;
@@ -672,7 +675,12 @@ var ComplexNumber = (function () {
         .method('hashCode', function () {
             return this.toString().hashCode();
         })
-        .method('equals', function (c) {})
+        .method('equals', function (c) {
+            c = ComplexNumber.prototype.numberCheck(c);
+            if(c == null) return false;
+
+            return this.a === c.a && this.b === c.b;
+        })
         .method('comparator', function (c1, c2) {})
         .method('print', function () {
             console.log(this.toString());
