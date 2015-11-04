@@ -681,7 +681,7 @@ var ComplexNumber = (function () {
                     ? (this.b.toString() + 'i')
                     : (this.b == 0
                     ? ''
-                    : ('+' + this.b.toString() + 'i')));
+                    : ((this.b > 0 ? '+' : '') + this.b.toString() + 'i')));
         })
         .method('hashCode', function () {
             return this.toString().hashCode();
