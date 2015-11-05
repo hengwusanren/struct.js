@@ -430,7 +430,19 @@ var Matrix = (function () {
                 return v1 - v2;
             });
         })
-        .method('trans transpose', function () {})
+        .method('trans transpose', function () {
+            var arrArr = [];
+            for(var j = 0, hlen = this.hsize(); j < hlen; j++) {
+                arrArr.push([]);
+            }
+            for(var i = 0, vlen = this.vsize(); i < vlen; i++) {
+                var curRow = this._data[i];
+                for(var j = 0, hlen = this.hsize(); j < hlen; j++) {
+                    arrArr[j].push(curRow[j]);
+                }
+            }
+            return new Matrix(arrArr);
+        })
         .method('multiply', function (mat) {
             // check arguments:
             // todo
