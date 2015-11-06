@@ -467,7 +467,18 @@ var Matrix = (function () {
             }
             return new Matrix(arrArr);
         })
-        .method('power', function () {})
+        .method('power', function (n) {
+            if(n < 0) {
+                // todo
+            } else if(n == 0) {
+                // todo
+            } else if(n == 1) {
+                // todo
+            } else {
+                var h = Math.floor(n / 2);
+                // todo
+            }
+        })
         .method('sqrt', function () {})
         .method('init', function (val, size) {
             if(arguments.length == 0) {
