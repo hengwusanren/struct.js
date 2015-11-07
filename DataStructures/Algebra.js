@@ -27,6 +27,14 @@ var Vector = (function () {
         .method('data', function () {
             return this._data;
         })
+        .method('clone', function () {
+            var len = this.size(),
+                arr = new Array(len);
+            for(var i = 0; i < len; i++) {
+                arr[i] = this._data[i];
+            }
+            return new Vector(arr);
+        })
         .method('front', function () {
             if(this.isEmpty()) return null;
             return this._data[0];
@@ -204,6 +212,18 @@ var Matrix = (function () {
     }
         .method('data', function () {
             return this._data;
+        })
+        .method('clone', function () {
+            var vlen = this.vsize(),
+                arr = new Array(vlen);
+            for(var i = 0, hlen = this.hsize(); i < vlen; i++) {
+                var curRow = this._data[i];
+                arr[i] = new Array(hlen);
+                for(var j = 0; j < hlen; j++) {
+                    arr[i][j] = curRow[j];
+                }
+            }
+            return new Matrix(arr);
         })
         .method('sizeValid', function (size) {
             return Array.isArray(size) && size.length === 2
@@ -467,16 +487,19 @@ var Matrix = (function () {
             }
             return new Matrix(arrArr);
         })
-        .method('power', function (n) {
+        .method('power', function (n) { // to be tested
             if(n < 0) {
-                // todo
+                return this.power(-n).inv();
             } else if(n == 0) {
-                // todo
+                return this.ones(this.size());
             } else if(n == 1) {
-                // todo
+                return this.clone();
             } else {
                 var h = Math.floor(n / 2);
-                // todo
+                var hp = this.power(h),
+                    p = hp.multiply(hp);
+                if(p > hp * 2) return this.multiply(p);
+                return p;
             }
         })
         .method('sqrt', function () {})
