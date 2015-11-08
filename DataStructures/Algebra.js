@@ -729,7 +729,11 @@ var ComplexNumber = (function () {
 
             return this.multiply(c.inv());
         })
-        .method('power', function (n) {})
+        .method('power', function (n) {
+            var r = Math.pow(this.modulus(), n);
+            var arg = (this.arg() * n) % (2 * Math.PI);
+            return new ComplexNumber(a, b);
+        })
         .method('sqrt', function (n) {})
         .method('toString', function () {
             return this.a.toString() + (this.b < 0
