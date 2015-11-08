@@ -589,6 +589,9 @@ var RationalNumber = (function () {
             this.q = Math.round(this.q / t);
         }
     }
+        .method('clone', function () {
+            return new RationalNumber(this.p, this.q);
+        })
         .method('gcd', function (a, b) {
             if (a < b) {
                 var c = a;
@@ -636,7 +639,10 @@ var RationalNumber = (function () {
         .method('hashCode', function () {
             return this.toString().hashCode();
         })
-        .method('equals', function (r) {})
+        .method('equals', function (r) {
+            if(this.q === 0 && r.q === 0) return true;
+            return (this.p === r.p && this.q === r.q);
+        })
         .method('comparator', function (r1, r2) {})
         .method('print', function () {
             console.log(this.toString());
@@ -655,6 +661,9 @@ var ComplexNumber = (function () {
         this.a = parseFloat(a);
         this.b = parseFloat(b);
     }
+        .method('clone', function () {
+            return new ComplexNumber(this.a, this.b);
+        })
         .method('isZero', function () {
             return this.a === 0 && this.b === 0;
         })
