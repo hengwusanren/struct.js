@@ -547,6 +547,13 @@ var Matrix = (function () {
             }
             return new Matrix(arrArr);
         })
+        .method('_childMatrix', function (i, j) {
+            var mother = this._data,
+                vsize = this.vsize() - 1,
+                hsize = this.hsize() - 1;
+            var child = new Array(vsize);
+            // todo
+        })
     /**
      * calculate the determinant
      */
@@ -732,9 +739,12 @@ var ComplexNumber = (function () {
         .method('power', function (n) {
             var r = Math.pow(this.modulus(), n);
             var arg = (this.arg() * n) % (2 * Math.PI);
-            return new ComplexNumber(a, b);
+            return new ComplexNumber(r * Math.cos(arg), r * Math.sin(arg));
         })
-        .method('sqrt', function (n) {})
+        .method('sqrt', function (n) { // not only one value
+            var r = Math.pow(this.modulus(), 1 / n);
+            // todo
+        })
         .method('toString', function () {
             return this.a.toString() + (this.b < 0
                     ? (this.b.toString() + 'i')
