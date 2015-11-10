@@ -547,12 +547,21 @@ var Matrix = (function () {
             }
             return new Matrix(arrArr);
         })
-        .method('_childMatrix', function (i, j) {
+        .method('_childMatrix', function (x, y) {
             var mother = this._data,
-                vsize = this.vsize() - 1,
-                hsize = this.hsize() - 1;
-            var child = new Array(vsize);
-            // todo
+                vsize = this.vsize(),
+                hsize = this.hsize();
+            var child = [];
+            for(var i = 0; i < vsize; i++) {
+                if(i == x) continue;
+                var newRow = [];
+                for(var j = 0; j < hsize; j++) {
+                    if(j == y) continue;
+                    newRow.push(this._data[i][j]);
+                }
+                child.push(newRow);
+            }
+            return new Matrix(child);
         })
     /**
      * calculate the determinant
