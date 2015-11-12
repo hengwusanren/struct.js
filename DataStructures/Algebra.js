@@ -566,8 +566,39 @@ var Matrix = (function () {
     /**
      * calculate the determinant
      */
-        .method('det', function () {})
+        .method('det', function () {
+            var n = this.vsize();
+            if(n <= 0 || n !== this.hsize()) return 0;
+            if(n == 1) return this._data[0][0];
+            if(n == 2) return this._data[0][0] * this._data[1][1] - this._data[1][0] * this._data[0][1];
+            // turn to upper triangular matrix:
+            // todo
+            // return the product of the entries on the main diagonal:
+            // todo
+        })
         .method('inv', function () {})
+        .method('rowTrans', function (i, c, j) {
+            if(arguments.length < 2) return this;
+            if(arguments.length == 2) {
+                var curRow = this._data[i];
+                for(var k = 0, n = this.hsize(); k < n; k++) {
+                    curRow[k] *= c;
+                }
+                return this;
+            }
+            if(c == null) {
+                var tmp = this._data[i];
+                this._data[i] = this._data[j];
+                this._data[j] = tmp;
+                return this;
+            }
+            var dstRow = this._data[j],
+                srcRow = this._data[i];
+            for(var k = 0, n = this.hsize(); k < n; k++) {
+                dstRow[k] += srcRow[k] * c;
+            }
+            return this;
+        })
         .method('format', function () {})
         .method('toString', function () {
             var ret = '(\n';
