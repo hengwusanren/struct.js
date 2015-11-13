@@ -599,7 +599,23 @@ var Matrix = (function () {
             }
             return this;
         })
-        .method('format', function () {})
+    /**
+     * format to upper/lower triangle matrix
+     */
+        .method('format', function (type) {
+            var prod = 1,
+                offset = 0,
+                n = this.vsize();
+            if(!type) { // upper
+                for(;;) {
+                    // try to make this._data[0][offset] != 0;
+                    // if success, make the offset_th elements of all rows below be 0;
+                    // else, offset++, continue.
+                }
+            } else { // lower
+                // todo
+            }
+        })
         .method('toString', function () {
             var ret = '(\n';
             for(var i = 0, vsize = this.vsize(); i < vsize; i++) {
