@@ -572,9 +572,8 @@ var Matrix = (function () {
             if(n == 1) return this._data[0][0];
             if(n == 2) return this._data[0][0] * this._data[1][1] - this._data[1][0] * this._data[0][1];
             // turn to upper triangular matrix:
-            return this.clone().format();
             // return the product of the entries on the main diagonal:
-            // todo
+            return this.clone().format();
         })
         .method('inv', function () {})
         .method('rowTrans', function (i, c, j) {
