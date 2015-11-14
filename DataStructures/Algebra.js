@@ -566,13 +566,13 @@ var Matrix = (function () {
     /**
      * calculate the determinant
      */
-        .method('det', function () {
+        .method('det', function () { // tobe tested
             var n = this.vsize();
             if(n <= 0 || n !== this.hsize()) return 0;
             if(n == 1) return this._data[0][0];
             if(n == 2) return this._data[0][0] * this._data[1][1] - this._data[1][0] * this._data[0][1];
             // turn to upper triangular matrix:
-            // todo
+            return this.format();
             // return the product of the entries on the main diagonal:
             // todo
         })
@@ -602,16 +602,38 @@ var Matrix = (function () {
     /**
      * format to upper/lower triangle matrix
      */
-        .method('format', function (type) {
+        .method('format', function (type) { // tobe tested
             var prod = 1,
                 offset = 0,
                 n = this.vsize();
             if(!type) { // upper
                 for(;;) {
-                    // try to make this._data[0][offset] != 0;
-                    // if success, make the offset_th elements of all rows below be 0;
-                    // else, offset++, continue.
+                    // try to make this._data[offset][offset] != 0;
+                    // if success, make the offset_th elements of all rows below be 0,
+                    //     offset++, continue;
+                    // else, return 0;
+                    if(this._data[offset][offset] === 0) {
+                        var i = offset + 1;
+                        for(; i < n; i++) {
+                            if(this._data[i][offset] !== 0) {
+                                var tmpRow = this._data[offset];
+                                this._data[offset] = this._data[i];
+                                this._data[i] = tmpRow;
+                                prod *= -1;
+                                break;
+                            }
+                        }
+                        if(i == n) return 0;
+                    }
+                    var base = this._data[offset][offset];
+                    for(var i = offset + 1; i < n; i++) {
+                        if(this._data[i][offset] === 0) continue;
+                        this.rowTrans(offset, -this._data[i][offset] / base, i);
+                    }
+                    prod *= base;
+                    offset++;
                 }
+                return prod;
             } else { // lower
                 // todo
             }
