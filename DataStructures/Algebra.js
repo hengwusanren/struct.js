@@ -606,7 +606,7 @@ var Matrix = (function () {
                 offset = 0,
                 n = this.vsize();
             if(!type) { // upper
-                for(;;) {
+                for(; offset < n;) {
                     // try to make this._data[offset][offset] != 0;
                     // if success, make the offset_th elements of all rows below be 0,
                     //     offset++, continue;
@@ -843,3 +843,15 @@ var ComplexNumber = (function () {
             console.log(this.toString());
         });
 })();
+
+(function () {
+    return;
+
+    var mtrx0 = new Matrix([
+        [1, 1, 1],
+        [2, 2, 2],
+        [3, 3, 3]
+    ]);
+    console.log(mtrx0.det());
+})
+();
