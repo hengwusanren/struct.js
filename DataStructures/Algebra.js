@@ -634,7 +634,33 @@ var Matrix = (function () {
                 }
                 return prod;
             } else { // lower
-                // same as upper
+                for(; offset < n;) {
+                    // try to make this._data[n - 1 - offset][offset] != 0;
+                    // if success, make the offset_th elements of all rows above be 0,
+                    //     offset++, continue;
+                    // else, return 0;
+                    if(this._data[n - 1 - offset][offset] === 0) {
+                        var i = n - 2 - offset;
+                        for(; i >= 0; i--) {
+                            if(this._data[i][offset] !== 0) {
+                                var tmpRow = this._data[offset];
+                                this._data[offset] = this._data[i];
+                                this._data[i] = tmpRow;
+                                prod *= -1;
+                                break;
+                            }
+                        }
+                        if(i < 0) return 0;
+                    }
+                    var base = this._data[n - 1 - offset][offset];
+                    for(var i = n - 2 - offset; i >= 0; i--) {
+                        if(this._data[i][offset] === 0) continue;
+                        this.rowTrans(n - 1 - offset, -this._data[i][offset] / base, i);
+                    }
+                    prod *= base;
+                    offset++;
+                }
+                return prod * ((Math.floor(n / 2) % 2 == 0) ? 1 : -1);
             }
         })
         .method('toString', function () {
