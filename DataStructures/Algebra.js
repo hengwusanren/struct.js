@@ -598,6 +598,8 @@ var Matrix = (function () {
             }
             return this;
         })
+        .method('rank', function () {})
+        .method('invertible', function () {})
     /**
      * format to upper/lower triangle matrix
      */
