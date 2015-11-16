@@ -603,16 +603,18 @@ var Matrix = (function () {
     /**
      * format to upper/lower triangle matrix
      */
-        .method('format', function (type) { // tobe tested
+        .method('format', function (type, noNeedToTrans) { // tobe tested
             var prod = 1,
-                offset = 0,
+                roffset = 0,
+                coffset = 0,
                 n = this.vsize();
             if(!type) { // upper
-                for(; offset < n;) {
-                    // try to make this._data[offset][offset] != 0;
-                    // if success, make the offset_th elements of all rows below be 0,
-                    //     offset++, continue;
-                    // else, return 0;
+                for(; roffset < n;) {
+                    // try to make this._data[roffset][coffset] != 0;
+                    // if success, make the coffset_th elements of all rows below be 0,
+                    //     roffset++, coffset++, continue;
+                    // else, if noNeedToTrans, return 0;
+                    //       else, coffset++, continue;
                     if(this._data[offset][offset] === 0) {
                         var i = offset + 1;
                         for(; i < n; i++) {
@@ -637,8 +639,8 @@ var Matrix = (function () {
                 return prod;
             } else { // lower
                 for(; offset < n;) {
-                    // try to make this._data[n - 1 - offset][offset] != 0;
-                    // if success, make the offset_th elements of all rows above be 0,
+                    // try to make this._data[offset][offset] != 0;
+                    // if success, make the offset_th elements of all rows on the right be 0,
                     //     offset++, continue;
                     // else, return 0;
                     if(this._data[n - 1 - offset][offset] === 0) {
