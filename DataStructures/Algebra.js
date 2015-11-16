@@ -598,6 +598,9 @@ var Matrix = (function () {
             }
             return this;
         })
+        .method('colTrans', function (i, c, j) {
+            // todo
+        })
         .method('rank', function () {})
         .method('invertible', function () {})
     /**
@@ -607,63 +610,76 @@ var Matrix = (function () {
             var prod = 1,
                 roffset = 0,
                 coffset = 0,
-                n = this.vsize();
+                v = this.vsize(),
+                h = this.hsize();
             if(!type) { // upper
-                for(; roffset < n;) {
+                for(; roffset < v && coffset < h;) {
                     // try to make this._data[roffset][coffset] != 0;
                     // if success, make the coffset_th elements of all rows below be 0,
                     //     roffset++, coffset++, continue;
-                    // else, if noNeedToTrans, return 0;
+                    // else, if noNeedToTrans, prod = 0, break;
                     //       else, coffset++, continue;
-                    if(this._data[offset][offset] === 0) {
-                        var i = offset + 1;
-                        for(; i < n; i++) {
-                            if(this._data[i][offset] !== 0) {
-                                var tmpRow = this._data[offset];
-                                this._data[offset] = this._data[i];
+                    var i = 0;
+                    if(this._data[roffset][coffset] === 0) {
+                        for(i = roffset + 1; i < v; i++) {
+                            if(this._data[i][coffset] !== 0) {
+                                var tmpRow = this._data[roffset];
+                                this._data[roffset] = this._data[i];
                                 this._data[i] = tmpRow;
                                 prod *= -1;
                                 break;
                             }
                         }
-                        if(i == n) return 0;
+                        if(i == v) { 
+                            prod = 0;
+                            if(noNeedToTrans) break;
+                            coffset++;
+                            continue;
+                        }
                     }
-                    var base = this._data[offset][offset];
-                    for(var i = offset + 1; i < n; i++) {
-                        if(this._data[i][offset] === 0) continue;
-                        this.rowTrans(offset, -this._data[i][offset] / base, i);
+                    var base = this._data[roffset][coffset];
+                    for(i = roffset + 1; i < v; i++) {
+                        if(this._data[i][coffset] === 0) continue;
+                        this.rowTrans(roffset, -this._data[i][coffset] / base, i);
                     }
                     prod *= base;
-                    offset++;
+                    roffset++;
+                    coffset++;
                 }
+                if(roffset != v || coffset != h) return 0;
                 return prod;
             } else { // lower
-                for(; offset < n;) {
-                    // try to make this._data[offset][offset] != 0;
-                    // if success, make the offset_th elements of all rows on the right be 0,
-                    //     offset++, continue;
-                    // else, return 0;
-                    if(this._data[n - 1 - offset][offset] === 0) {
-                        var i = n - 2 - offset;
-                        for(; i >= 0; i--) {
-                            if(this._data[i][offset] !== 0) {
-                                var tmpRow = this._data[offset];
-                                this._data[offset] = this._data[i];
-                                this._data[i] = tmpRow;
+                for(; roffset < v && coffset < h;) {
+                    if(this._data[roffset][coffset] === 0) {
+                        for(i = coffset + 1; i < h; i++) {
+                            if(this._data[roffset][i] !== 0) {
+                                // exchange col coffset and i:
+                                for(var j = 0; j < v; j++) {
+                                    var tmp = this._data[j][coffset];
+                                    this._data[j][coffset] = this._data[j][i];
+                                    this._data[j][i] = tmp;
+                                }
                                 prod *= -1;
                                 break;
                             }
                         }
-                        if(i < 0) return 0;
+                        if(i == h) {
+                            prod = 0;
+                            if(noNeedToTrans) break;
+                            roffset++;
+                            continue;
+                        }
                     }
-                    var base = this._data[n - 1 - offset][offset];
-                    for(var i = n - 2 - offset; i >= 0; i--) {
-                        if(this._data[i][offset] === 0) continue;
-                        this.rowTrans(n - 1 - offset, -this._data[i][offset] / base, i);
+                    var base = this._data[roffset][coffset];
+                    for(var i = coffset + 1; i < h; i++) {
+                        if(this._data[roffset][i] === 0) continue;
+                        this.colTrans(coffset, -this._data[roffset][i] / base, i);
                     }
                     prod *= base;
-                    offset++;
+                    roffset++;
+                    coffset++;
                 }
+                if(roffset != v || coffset != h) return 0;
                 return prod * ((Math.floor(n / 2) % 2 == 0) ? 1 : -1);
             }
         })
