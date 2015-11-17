@@ -573,7 +573,7 @@ var Matrix = (function () {
             if(n == 2) return this._data[0][0] * this._data[1][1] - this._data[1][0] * this._data[0][1];
             // turn to upper triangular matrix:
             // return the product of the entries on the main diagonal:
-            return this.clone().format();
+            return this.clone().format(0, true);
         })
         .method('inv', function () {})
         .method('rowTrans', function (i, c, j) {
@@ -619,8 +619,17 @@ var Matrix = (function () {
             }
             return this;
         })
-        .method('rank', function () {})
-        .method('invertible', function () {})
+        .method('rank', function () { // tobe tested
+            var m = this.clone();
+            var trans = m.format(),
+                v = m.vsize(),
+                h = m.hsize();
+            if(trans.full) return Math.min(v, h);
+            return trans.rowOffset;
+        })
+        .method('invertible nonSingular', function () { // tobe tested
+            return this.clone().format().full && this.vsize() === this.hsize();
+        })
     /**
      * format to upper/lower triangle matrix
      */
@@ -662,8 +671,15 @@ var Matrix = (function () {
                     roffset++;
                     coffset++;
                 }
-                if(roffset != v || coffset != h) return 0;
-                return prod;
+                if(roffset != v || coffset != h) return noNeedToTrans ? 0 : { 
+                    value: 0,
+                    rowOffset: roffset,
+                    colOffset: coffset
+                };
+                return noNeedToTrans ? prod : {
+                    value: prod,
+                    full: true
+                };
             } else { // lower
                 for(; roffset < v && coffset < h;) {
                     if(this._data[roffset][coffset] === 0) {
@@ -690,8 +706,16 @@ var Matrix = (function () {
                     roffset++;
                     coffset++;
                 }
-                if(roffset != v || coffset != h) return 0;
-                return prod * ((Math.floor(n / 2) % 2 == 0) ? 1 : -1);
+                if(roffset != v || coffset != h) return noNeedToTrans ? 0 : {
+                    value: 0,
+                    rowOffset: roffset,
+                    colOffset: coffset
+                };
+                prod *= ((Math.floor(n / 2) % 2 == 0) ? 1 : -1);
+                return noNeedToTrans ? prod : {
+                    value: prod,
+                    full: true
+                };
             }
         })
         .method('toString', function () {
