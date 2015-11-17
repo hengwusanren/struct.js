@@ -599,7 +599,25 @@ var Matrix = (function () {
             return this;
         })
         .method('colTrans', function (i, c, j) {
-            // todo
+            if(arguments.length < 2) return this;
+            if(arguments.length == 2) {
+                for(var k = 0, n = this.vsize(); k < n; k++) {
+                    this._data[k][i] *= c;
+                }
+                return this;
+            }
+            if(c == null) {
+                for(var k = 0, n = this.vsize(); k < n; k++) {
+                    var tmp = this._data[k][i];
+                    this._data[k][i] = this._data[k][j];
+                    this._data[k][j] = tmp;
+                }
+                return this;
+            }
+            for(var k = 0, n = this.vsize(); k < n; k++) {
+                this._data[k][j] += this._data[k][i] * c;
+            }
+            return this;
         })
         .method('rank', function () {})
         .method('invertible', function () {})
@@ -623,9 +641,7 @@ var Matrix = (function () {
                     if(this._data[roffset][coffset] === 0) {
                         for(i = roffset + 1; i < v; i++) {
                             if(this._data[i][coffset] !== 0) {
-                                var tmpRow = this._data[roffset];
-                                this._data[roffset] = this._data[i];
-                                this._data[i] = tmpRow;
+                                this.rowTrans(roffset, null, i);
                                 prod *= -1;
                                 break;
                             }
@@ -653,12 +669,7 @@ var Matrix = (function () {
                     if(this._data[roffset][coffset] === 0) {
                         for(i = coffset + 1; i < h; i++) {
                             if(this._data[roffset][i] !== 0) {
-                                // exchange col coffset and i:
-                                for(var j = 0; j < v; j++) {
-                                    var tmp = this._data[j][coffset];
-                                    this._data[j][coffset] = this._data[j][i];
-                                    this._data[j][i] = tmp;
-                                }
+                                this.colTrans(coffset, null, i);
                                 prod *= -1;
                                 break;
                             }
