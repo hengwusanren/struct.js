@@ -575,7 +575,10 @@ var Matrix = (function () {
             // return the product of the entries on the main diagonal:
             return this.clone().format(0, true);
         })
-        .method('inv', function () {})
+        .method('inv', function () {
+            // [A,b]增广矩阵，化为[E,X]
+            // todo
+        })
         .method('rowTrans', function (i, c, j) {
             if(arguments.length < 2) return this;
             if(arguments.length == 2) {
