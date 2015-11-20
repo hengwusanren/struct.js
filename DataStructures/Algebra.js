@@ -250,6 +250,9 @@ var Matrix = (function () {
         .method('get', function (rowIndex, colIndex) {
             return this._data[rowIndex][colIndex];
         })
+        .method('set', function (rowIndex, colIndex, value) {
+            this._data[rowIndex][colIndex] = value;
+        })
         .method('frontRow', function () {
             if(this.vsize() == 0) return null;
             return this.row(0);
@@ -578,7 +581,9 @@ var Matrix = (function () {
         .method('inv', function () {
             // [A,b]增广矩阵，化为[E,X]
             // 即，将A经过行变换变为E的同时，得到X
-
+            var n = this.vsize(),
+                X = new Matrix(0, [n, n]);
+            // todo
         })
         .method('rowTrans', function (i, c, j) {
             if(arguments.length < 2) return this;
