@@ -577,7 +577,8 @@ var Matrix = (function () {
         })
         .method('inv', function () {
             // [A,b]增广矩阵，化为[E,X]
-            // todo
+            // 即，将A经过行变换变为E的同时，得到X
+
         })
         .method('rowTrans', function (i, c, j) {
             if(arguments.length < 2) return this;
