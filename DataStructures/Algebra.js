@@ -583,7 +583,9 @@ var Matrix = (function () {
             // 即，将A经过行变换变为E的同时，得到X
             var n = this.vsize(),
                 X = new Matrix(0, [n, n]);
-            // todo
+            var t = this.clone().format(null, null, function (mat, i, c, j) {
+                    // todo
+                }, X);
         })
         .method('rowTrans', function (i, c, j) {
             if(arguments.length < 2) return this;
@@ -642,7 +644,7 @@ var Matrix = (function () {
     /**
      * format to upper/lower triangle matrix
      */
-        .method('format', function (type, noNeedToTrans) { // tobe tested
+        .method('format', function (type, noNeedToTrans, callback, mat) { // tobe tested
             var prod = 1,
                 roffset = 0,
                 coffset = 0,
@@ -660,6 +662,9 @@ var Matrix = (function () {
                         for(i = roffset + 1; i < v; i++) {
                             if(this._data[i][coffset] !== 0) {
                                 this.rowTrans(roffset, null, i);
+                                if(callback) {
+                                    callback(mat, roffset, null, i);
+                                }
                                 prod *= -1;
                                 break;
                             }
@@ -675,6 +680,9 @@ var Matrix = (function () {
                     for(i = roffset + 1; i < v; i++) {
                         if(this._data[i][coffset] === 0) continue;
                         this.rowTrans(roffset, -this._data[i][coffset] / base, i);
+                        if(callback) {
+                            callback(mat, roffset, -this._data[i][coffset] / base, i);
+                        }
                     }
                     prod *= base;
                     roffset++;
