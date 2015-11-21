@@ -693,6 +693,14 @@ var Matrix = (function () {
                     rowOffset: roffset,
                     colOffset: coffset
                 };
+                if(callback && v === h) {
+                    for(i = v - 1; i >= 0; i--) {
+                        callback(mat, i, 1/this._data[i][i]);
+                        for(var j = i - 1; j >= 0; j--) {
+                            callback(mat, i, -this._data[j][i], j);
+                        }
+                    }
+                }
                 return noNeedToTrans ? prod : {
                     value: prod,
                     full: true
