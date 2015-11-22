@@ -578,13 +578,30 @@ var Matrix = (function () {
             // return the product of the entries on the main diagonal:
             return this.clone().format(0, true);
         })
-        .method('inv', function () {
+        .method('inv', function () { // tobe finished
             // [A,b]增广矩阵，化为[E,X]
             // 即，将A经过行变换变为E的同时，得到X
             var n = this.vsize(),
-                X = new Matrix(0, [n, n]);
+                X = Matrix.prototype.eye([n, n]);
             var t = this.clone().format(null, null, function (mat, i, c, j) {
-                    // todo
+                    if(arguments.length < 3) return mat;
+                    if(arguments.length == 3) {
+                        var curRow = mat._data[i];
+                        for(var k = 0, n = mat.hsize(); k < n; k++) {
+                            curRow[k] *= c;
+                        }
+                        return mat;
+                    }
+                    if(c == null) {
+                        // todo
+                        return mat;
+                    }
+                    var dstRow = mat._data[j],
+                        srcRow = mat._data[i];
+                    for(var k = 0, n = mat.hsize(); k < n; k++) {
+                        dstRow[k] += srcRow[k] * c;
+                    }
+                    return mat;
                 }, X);
         })
         .method('rowTrans', function (i, c, j) {
