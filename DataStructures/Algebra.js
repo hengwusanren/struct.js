@@ -605,7 +605,8 @@ var Matrix = (function () {
                     }
                     return mat;
                 }, X);
-            if(this.multiply(X).equals())
+            if(this.multiply(X).equals(Matrix.prototype.eye([n, n]))) console.log('Right!');
+            else console.log('Wrong!');
             return X;
         })
         .method('rowTrans', function (i, c, j) {
@@ -765,7 +766,16 @@ var Matrix = (function () {
             }
         })
         .method('equals', function (m) {
-            // todo
+            if(!this.sizeEqual(m)) {
+                return false;
+            }
+            var v = this.vsize(), h = this.hsize();
+            for(var i = 0; i < v; i++) {
+                for(var j = 0; j < h; j++) {
+                    if(this._data[i][j] !== m.get(i, j)) return false;
+                }
+            }
+            return true;
         })
         .method('toString', function () {
             var ret = '(\n';
