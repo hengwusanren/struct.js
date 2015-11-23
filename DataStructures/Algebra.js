@@ -593,7 +593,9 @@ var Matrix = (function () {
                         return mat;
                     }
                     if(c == null) {
-                        // todo
+                        var tmpRow = mat._data[i];
+                        mat._data[i] = mat._data[j];
+                        mat._data[j] = tmpRow;
                         return mat;
                     }
                     var dstRow = mat._data[j],
@@ -603,6 +605,8 @@ var Matrix = (function () {
                     }
                     return mat;
                 }, X);
+            if(this.multiply(X).equals())
+            return X;
         })
         .method('rowTrans', function (i, c, j) {
             if(arguments.length < 2) return this;
@@ -759,6 +763,9 @@ var Matrix = (function () {
                     full: true
                 };
             }
+        })
+        .method('equals', function (m) {
+            // todo
         })
         .method('toString', function () {
             var ret = '(\n';
