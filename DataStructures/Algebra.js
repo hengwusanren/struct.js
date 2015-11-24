@@ -167,6 +167,16 @@ var Vector = (function () {
             return Vector.prototype.init(1, size);
         })
         .method('format', function () {})
+        .method('equals', function (v) {
+            if(this.size() !== v.size()) {
+                return false;
+            }
+            var len = this.size();
+            for(var i = 0; i < len; i++) {
+                if(this._data[i] !== v.get(i)) return false;
+            }
+            return true;
+        })
         .method('toString', function () {
             return '(' + this._data.toString() + ')';
         })
