@@ -1003,5 +1003,19 @@ var ComplexNumber = (function () {
         [3, 3, 3]
     ]);
     console.log(mtrx0.det());
+    console.log(mtrx0.invertible());
+    var mtrx1 = new Matrix([
+        [1, 1, 1],
+        [0, 2, 2],
+        [0, 0, 3]
+    ]);
+    console.log(mtrx1.det());
+    console.log(mtrx1.invertible());
+    var mtrx2 = new Matrix([
+        [1, 1, 1],
+        [0, 2, 2]
+    ]);
+    console.log(mtrx2.det());
+    console.log(mtrx2.invertible());
 })
 ();
