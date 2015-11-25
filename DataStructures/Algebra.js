@@ -971,12 +971,12 @@ var ComplexNumber = (function () {
             var arg = (this.arg() * n) % (2 * Math.PI);
             return this.fromModAndArg(r, arg);
         })
-        .method('sqrt', function (n) { // not only one value
+        .method('sqrt', function (n) { // tobe tested
             var r = Math.pow(this.modulus(), 1 / n);
             var a = this.arg();
             var ret = new Array(n);
             for(var i = 0; i < n; i++) {
-                ret[i] = 
+                ret[i] = this.fromModAndArg(r, (a + i * 2 * Math.PI) / n);
             }
             return ret;
         })
