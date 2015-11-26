@@ -46,6 +46,10 @@ var Vector = (function () {
         .method('get', function (index) {
             return this._data[index];
         })
+        .method('set', function (index, value) {
+            this._data[index] = value;
+            return this;
+        })
         .method('size', function () {
             return this._data.length;
         })
@@ -148,6 +152,14 @@ var Vector = (function () {
             }
             return sum;
         })
+        .method('xMultiply', function (vec) {
+            if(this.size() !== 3 || !(vec instanceof Vector) || vec.size() !== 3) return null;
+            var ret = Vector.prototype.zeros(3);
+            ret.set(0, this.get(1) * vec.get(2) - this.get(2) * vec.get(1));
+            ret.set(1, this.get(2) * vec.get(0) - this.get(0) * vec.get(2));
+            ret.set(2, this.get(0) * vec.get(1) - this.get(1) * vec.get(0));
+            return ret;
+        })
         .method('init', function (val, size) {
             if(arguments.length == 0) {
                 throw new Error('A size is needed.');
@@ -166,7 +178,50 @@ var Vector = (function () {
         .method('ones', function (size) {
             return Vector.prototype.init(1, size);
         })
-        .method('format', function () {})
+        .method('median', function () {
+            var n = this.size();
+            if(n == 0) return null;
+            var arr = this._data.slice(0);
+            arr.sort();
+            if(n % 2 === 0) return (this._data[n / 2] + this._data[n / 2 - 1]) / 2;
+            return this._data[(n - 1) / 2];
+        })
+        .method('mean', function () {
+            var n = this.size();
+            if(n == 0) return 0;
+            var s = 0;
+            for(var i = 0; i < n; i++) {
+                s += this._data[i];
+            }
+            return s/n;
+        })
+        .method('modulus', function () {
+            var s = 0;
+            for(var i = 0, n = this.size(); i < n; i++) {
+                s += this._data[i] * this._data[i];
+            }
+            if(s == 0) return 0;
+            return Math.pow(s, 1/2);
+        })
+        .method('normalize', function () {
+            var mod = this.modulus();
+            if(mod != 0) {
+                for (var i = 0, n = this.size(); i < n; i++) {
+                    this._data[i] /= mod;
+                }
+            }
+            return this;
+        })
+        .method('variance', function () {
+            var n = this.size();
+            if(n == 0) return 0;
+            var m = this.mean();
+            var s = 0;
+            for(var i = 0; i < n; i++) {
+                s += Math.pow(this._data[i] - m, 2);
+            }
+            return s/n;
+        })
         .method('equals', function (v) {
             if(this.size() !== v.size()) {
                 return false;
