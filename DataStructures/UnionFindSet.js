@@ -7,11 +7,11 @@
  * Implemented with forest, union by rank and path compression.
  * Each element is a unique string here, so is each set.
  ********************************/
-var UnionFindSet = (function (SuperHashMap, SuperHashSet) {
+var UnionFindSet = (function () {
 
     "use strict";
 
-    if (!SuperHashMap || !SuperHashSet) return null;
+    //if (!SuperHashMap || !SuperHashSet) return null;
 
     return function (lazy) {
         // check arguments:
@@ -62,5 +62,26 @@ var UnionFindSet = (function (SuperHashMap, SuperHashSet) {
         })
         .method('findElements', function (setId) { // tobe fixed
             // todo
+        })
+        .method('print', function () {
+            for(var i in this._data) {
+                if(!this._data.hasOwnProperty(i)) continue;
+                console.log(i + ' ∈ ' + this.findSet(i));
+            }
         });
-})(HashMap, HashSet);
+})();
+
+(function () {
+    return;
+
+    var ufset = new UnionFindSet();
+    var n = 10;
+    var arr = new Array(n);
+    for(var i = 0; i < n; i++) {
+        arr[i] = i;//(Math.floor(Math.random() * 1000 % n));
+    }
+    ufset.init(arr);
+    ufset.union(arr[1], arr[3]);
+    ufset.print();
+})
+();
