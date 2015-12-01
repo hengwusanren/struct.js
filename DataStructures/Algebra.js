@@ -928,19 +928,37 @@ var RationalNumber = (function () {
         .method('hashCode', function () {
             return this.toString().hashCode();
         })
+        .method('equalSign', function (r) {
+            return ((this.p > 0 && r.p > 0) || (this.p == 0 && r.p == 0) || (this.p < 0 && r.p < 0));
+        })
         .method('equals', function (r) {
-            if(this.q === 0 && r.q === 0) return true;
+            if(this.q === 0 && r.q === 0) {
+                return this.equalSign(r);
+            }
             return (this.p === r.p && this.q === r.q);
         })
         .method('floatVal', function () {
-            if(this.q === 0 || this.p === 0) return 0;
+            if(this.p === 0) return 0;
+            if(this.q === 0) return null;
             return (this.p / this.q);
         })
         .method('comparator', function (r1, r2) {
             if(r1.equals(r2)) return 0;
-            if(r1.p > 0 && r2.p <= 0) return 1;
-            if(r1.p == 0 && r2.p < 0) return 1;
-            if(r1.floatVal() > r2.floatVal()) return 1;
+            var v1 = r1.floatVal(),
+                v2 = r2.floatVal();
+            if(v1 == null || v2 == null) {
+                if(v1 == null) {
+                    if(v2 == null) {
+                        if(r1.p * r2.p > 0) return 0;
+                        return r1.p > 0 ? 1 : -1;
+                    } else {
+                        return r1.p > 0 ? 1 : -1;
+                    }
+                } else {
+                    return r2.p < 0 ? 1 : -1;
+                }
+            }
+            return (v1 > v2) ? 1 : -1;
         })
         .method('print', function () {
             console.log(this.toString());
