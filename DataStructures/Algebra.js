@@ -932,7 +932,16 @@ var RationalNumber = (function () {
             if(this.q === 0 && r.q === 0) return true;
             return (this.p === r.p && this.q === r.q);
         })
-        .method('comparator', function (r1, r2) {})
+        .method('floatVal', function () {
+            if(this.q === 0 || this.p === 0) return 0;
+            return (this.p / this.q);
+        })
+        .method('comparator', function (r1, r2) {
+            if(r1.equals(r2)) return 0;
+            if(r1.p > 0 && r2.p <= 0) return 1;
+            if(r1.p == 0 && r2.p < 0) return 1;
+            if(r1.floatVal() > r2.floatVal()) return 1;
+        })
         .method('print', function () {
             console.log(this.toString());
         });
