@@ -922,12 +922,6 @@ var RationalNumber = (function () {
         .method('sqrt', function (n) {
             return this.isInfinite() ? null : Math.sqrt(this.p / this.q);
         })
-        .method('toString', function () {
-            return this.p.toString() + '/' + this.q.toString();
-        })
-        .method('hashCode', function () {
-            return this.toString().hashCode();
-        })
         .method('equalSign', function (r) {
             return ((this.p > 0 && r.p > 0) || (this.p == 0 && r.p == 0) || (this.p < 0 && r.p < 0));
         })
@@ -959,6 +953,12 @@ var RationalNumber = (function () {
                 }
             }
             return (v1 > v2) ? 1 : -1;
+        })
+        .method('toString', function () {
+            return this.p.toString() + '/' + this.q.toString();
+        })
+        .method('hashCode', function () {
+            return this.toString().hashCode();
         })
         .method('print', function () {
             console.log(this.toString());
