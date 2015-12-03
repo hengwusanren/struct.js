@@ -118,13 +118,23 @@ var BigInteger = (function (Compor) {
             // todo
         })
         .method('equals', function (v) {
-            // todo
+            if(this.radix !== v.radix) return false;
+            if(this.positive !== v.positive) return false;
+            if(this.data.length !== v.data.length) return false;
+            for(var i = 0, n = this.data.length; i < n; i++) {
+                if(this.data[i] !== v.data[i]) return false;
+            }
+            return true;
         })
-        .method('comparator', function (v1, v2) {
-            // todo
-        })
-        .method('toString', function (radix) {
-            // todo
+        .method('toString', function () {
+            var s = this.positive ? '' : '-';
+            var zeros = '';
+            for(var i = 0; i < this.radix; i++) zeros += '0';
+            for(var i = this.data.length - 1; i >= 0; i--) {
+                var tmps = this.data[i].toString(2);
+                s += (zeros.substr(0, this.radix - tmps.length) + tmps);
+            }
+            return s;
         })
         .method('print', function () {
             console.log(this.toString());
