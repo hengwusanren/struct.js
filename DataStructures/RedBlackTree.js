@@ -41,7 +41,7 @@ var RBTree = (function (SuperTree, Node) {
 
     "use strict";
 
-    if (!SuperTree) return null;
+    if (!SuperTree || !Node) return null;
 
     return function (rootValue, comparator) {
         // check arguments:

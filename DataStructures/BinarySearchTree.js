@@ -77,6 +77,10 @@ var BSTree = (function (SuperTree, Node, Compor) {
             node.parent = this._nil;
             return node;
         })
+        .method('isOrdered', function () {
+            // todo
+            return true;
+        })
 
 
         .method('_removeLeftForNode', function (thisNode) {
