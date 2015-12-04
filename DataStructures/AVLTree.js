@@ -66,31 +66,38 @@ var AVLTree = (function (SuperTree, Node) {
             root.right = t;
             return root;
         })
+        .method('_rRebalanceForNode', function (node) {
+            // todo
+        })
+        .method('_lRebalanceForNode', function (node) {
+            // todo
+        })
         .method('_rRebalance', function () {
             // todo
         })
         .method('_lRebalance', function () {
             // todo
         })
-        .method('_insertForNode', function (node, value) {
-            // todo
-        })
-        .method('insert', function (v) { // tobe tested
-            if(v == null) return this;
-            if(this.isNilNode(this.root)) {
-                this.root = this.newNode(v);
+        .method('_insertForNode', function (node, v) {
+            if(v == null) return null;
+            if(this.isNilNode(node)) {
+                node = this.newNode(v);
             } else {
-                var r = this.comparator(v, root.value);
+                var r = this.comparator(v, node.value);
                 if(r < 0) {
-                    this._insertForNode(this.root.left, v);
-                    this._lRebalance();
+                    node.left = this._insertForNode(node.left, v);
+                    node = this._lRebalanceForNode(node);
                 } else if(r == 0) {
-                    this.root.value = v;
+                    node.value = v;
                 } else {
-                    this._insertForNode(this.root.right, v);
-                    this._rRebalance();
+                    node.right = this._insertForNode(node.right, v);
+                    node = this._rRebalanceForNode(node);
                 }
             }
+            return node;
+        })
+        .method('insert', function (v) { // tobe tested
+            if(v != null) this._insertForNode(this.root, v);
             return this;
         })
         .method('remove', function (e) { // tobe tested
