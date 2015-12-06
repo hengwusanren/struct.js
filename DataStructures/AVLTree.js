@@ -66,17 +66,33 @@ var AVLTree = (function (SuperTree, Node) {
             root.right = t;
             return root;
         })
-        .method('_rRebalanceForNode', function (node) {
-            // todo
+        .method('_rRebalanceForNode', function (node) { // tobe finished
+            var lnode = node.left,
+                rnode = node.right,
+                lheight = this._heightForNode(lnode),
+                rheight = this._heightForNode(rnode);
+            if(rheight > lheight + 1) {
+                //
+            } else {
+                //
+            }
         })
-        .method('_lRebalanceForNode', function (node) {
-            // todo
+        .method('_lRebalanceForNode', function (node) { // tobe finished
+            var lnode = node.left,
+                rnode = node.right,
+                lheight = this._heightForNode(lnode),
+                rheight = this._heightForNode(rnode);
+            if(lheight > rheight + 1) {
+                //
+            } else {
+                //
+            }
         })
-        .method('_rRebalance', function () {
-            // todo
+        .method('_rRebalance', function () { // tobe finished
+            return this._rRebalanceForNode(this.root);
         })
-        .method('_lRebalance', function () {
-            // todo
+        .method('_lRebalance', function () { // tobe finished
+            return this._lRebalanceForNode(this.root);
         })
         .method('_insertForNode', function (node, v) {
             if(v == null) return null;
